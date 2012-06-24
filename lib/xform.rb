@@ -28,6 +28,8 @@ module ArrayXForm
       self.instance_variable_get(:@valid)
     elsif key == :errors
       self.instance_variable_get(:@errors)
+    elsif key == :raw_values
+      self.instance_variable_get(:@raw_values)
     end
   end
 end
@@ -44,9 +46,13 @@ module XForm
   def build(params = Hash.new)
 
     parsed_params = {}
+    raw_params = {}
     errors = {}
 
     params.each do |name, value|
+      next unless @meta.include?(name)
+
+      raw_params[name] = value
       parsed_value, error = parse(name, value)
       unless error
         parsed_params[name] = parsed_value
@@ -68,13 +74,14 @@ module XForm
         include RawXForm
       end
       form = form_class.new
-      params.each do |name, value|
+      raw_params.each do |name, value|
         form.instance_variable_set("@#{name}", value)
       end
       form.instance_variable_set(:@valid, false)
       form.instance_variable_set(:@errors, errors)
     end
 
+    form.instance_variable_set(:@raw_values, raw_params)
     form
   end
 
@@ -103,5 +110,17 @@ module XForm
     end
 
     [parsed_value, error]
+  end
+
+  def raw(form)
+    raw_form_class = Class.new(form.class) do
+      include RawXForm
+    end
+
+    raw_form = raw_form_class.new
+    form[:raw_values].each do |name, value|
+      raw_form.instance_variable_set("@#{name}", value)
+    end
+    raw_form
   end
 end

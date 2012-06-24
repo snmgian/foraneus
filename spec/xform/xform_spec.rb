@@ -189,7 +189,36 @@ describe XForm do
         its(:expected_type) { should == :float }
       end
     end
+  end
 
+  describe '[:raw_values]' do
+    let(:form_class) do
+      Class.new do
+        extend XForm
+        include ArrayXForm
+
+        float :cost
+      end
+    end
+
+    context 'when valid' do
+      let(:raw_cost) { "invalid" }
+
+      it "holds the raw cost value" do
+        form = form_class.build(:cost => raw_cost)
+
+        form[:raw_values][:cost].should == raw_cost
+      end
+    end
+
+    context 'when valid' do
+      let(:raw_cost) { "3.14" }
+      it "holds the raw cost value" do
+        form = form_class.build(:cost => raw_cost)
+
+        form[:raw_values][:cost].should == raw_cost
+      end
+    end
   end
 
   describe '.float' do # TODO find sth better, like: describe a type definition method
@@ -204,4 +233,38 @@ describe XForm do
     end
   end
 
+  describe '.raw' do
+    let(:form_class) do
+      Class.new do
+        extend XForm
+        include ArrayXForm
+
+        float :cost
+      end
+    end
+
+    context 'with form' do
+      let(:form) { form_class.build }
+
+      it "returns a kind of RawXForm" do
+        raw_form = form_class.raw(form)
+
+        raw_form.should be_a_kind_of(RawXForm)
+      end
+
+      it "returns a kind of form's class" do
+        raw_form = form_class.raw(form)
+
+        raw_form.should be_a_kind_of(form_class)
+      end
+
+      it "holds raw values" do
+        raw_cost = "3.14"
+        form = form_class.build(:cost => raw_cost)
+        raw_form = form_class.raw(form)
+
+        raw_form.cost.should == raw_cost
+      end
+    end
+  end
 end
