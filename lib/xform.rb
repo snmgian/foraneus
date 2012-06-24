@@ -99,6 +99,28 @@ module XForm
       form
     end
 
+    def build_hash(params = Hash.new)
+      parsed_params = {}
+      errors = {}
+
+      params.each do |name, value|
+        next unless @meta.include?(name)
+
+        parsed_value, error = parse(name, value)
+        unless error
+          parsed_params[name] = parsed_value
+        else
+          errors[name] = FieldError.new(name, value, @meta[name])
+        end
+      end
+
+      if errors.empty?
+        parsed_params
+      else
+        return nil
+      end
+    end
+
     def parse(name, value)
       @meta ||= {}
 
