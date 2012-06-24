@@ -1,5 +1,7 @@
 module InvalidXForm; end
 
+module RawXForm; end
+
 class FieldError
   attr_accessor :field_name
   attr_accessor :field_value
@@ -63,6 +65,7 @@ module XForm
     else
       form_class = Class.new(self) do
         include InvalidXForm
+        include RawXForm
       end
       form = form_class.new
       params.each do |name, value|

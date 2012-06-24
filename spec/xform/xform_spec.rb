@@ -36,16 +36,25 @@ describe XForm do
 
     context 'invalid' do
       let(:cost) { 'A' }
+
       it "returns a subclass of the form" do
         form = form_class.build(:cost => cost)
 
         form.should be_a_kind_of(form_class)
       end
-      it "returns a subclass of InvalidXForm" do
+
+      it "returns a kind of InvalidXForm" do
         form = form_class.build(:cost => cost)
 
         form.should be_a_kind_of(InvalidXForm)
       end
+
+      it "returns a kind of RawXForm" do
+        form = form_class.build(:cost => cost)
+
+        form.should be_a_kind_of(RawXForm)
+      end
+
       it "holds the invalid cost" do
         form = form_class.build(:cost => cost)
 
@@ -83,7 +92,6 @@ describe XForm do
     end
 
     context 'invalid' do
-      #let(:invalid_cost) { 'A' }
       let(:invalid_form) do
         klass = Class.new(form_class) do
           include InvalidXForm
@@ -114,21 +122,6 @@ describe XForm do
           error.invalid_form.should == invalid_form
         end
       end
-      #it "returns a subclass of the form" do
-        #form = form_class.build(:cost => cost)
-
-        #form.should be_a_kind_of(form_class)
-      #end
-      #it "returns a subclass of InvalidXForm" do
-        #form = form_class.build(:cost => cost)
-
-        #form.should be_a_kind_of(InvalidXForm)
-      #end
-      #it "holds the invalid cost" do
-        #form = form_class.build(:cost => cost)
-
-        #form.cost.should be(cost)
-      #end
     end
   end
 
