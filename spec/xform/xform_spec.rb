@@ -3,7 +3,7 @@ require 'spec_helper'
 describe XForm do
   it "should define a form class" do
     form_class = Class.new do
-      extend XForm
+      include XForm
       include ArrayXForm
 
       float :cost
@@ -15,7 +15,7 @@ describe XForm do
   describe '.build' do
     let(:form_class) do
       Class.new do
-        extend XForm
+        include XForm
         include ArrayXForm
 
         float :cost
@@ -66,7 +66,7 @@ describe XForm do
   describe '.build!' do
     let(:form_class) do
       Class.new do
-        extend XForm
+        include XForm
         include ArrayXForm
 
         float :cost
@@ -128,7 +128,7 @@ describe XForm do
   describe '[:valid?]' do
     let(:form_class) do
       Class.new do
-        extend XForm
+        include XForm
         include ArrayXForm
 
         float :cost
@@ -155,7 +155,7 @@ describe XForm do
   describe '[:errors]' do
     let(:form_class) do
       Class.new do
-        extend XForm
+        include XForm
         include ArrayXForm
 
         float :cost
@@ -194,37 +194,26 @@ describe XForm do
   describe '[:raw_values]' do
     let(:form_class) do
       Class.new do
-        extend XForm
+        include XForm
         include ArrayXForm
 
         float :cost
       end
     end
 
-    context 'when valid' do
-      let(:raw_cost) { "invalid" }
+    let(:raw_cost) { "3.14" }
 
-      it "holds the raw cost value" do
-        form = form_class.build(:cost => raw_cost)
+    it "holds the raw cost value" do
+      form = form_class.build(:cost => raw_cost)
 
-        form[:raw_values][:cost].should == raw_cost
-      end
-    end
-
-    context 'when valid' do
-      let(:raw_cost) { "3.14" }
-      it "holds the raw cost value" do
-        form = form_class.build(:cost => raw_cost)
-
-        form[:raw_values][:cost].should == raw_cost
-      end
+      form[:raw_values][:cost].should == raw_cost
     end
   end
 
   describe '.float' do # TODO find sth better, like: describe a type definition method
     it "creates a reader method" do
       form_class = Class.new do
-        extend XForm
+        include XForm
 
         float :cost
       end
@@ -236,7 +225,7 @@ describe XForm do
   describe '.raw' do
     let(:form_class) do
       Class.new do
-        extend XForm
+        include XForm
         include ArrayXForm
 
         float :cost
@@ -264,6 +253,28 @@ describe XForm do
         raw_form = form_class.raw(form)
 
         raw_form.cost.should == raw_cost
+      end
+    end
+
+    context 'with params' do
+      let(:params) { Hash.new(:cost => "3.14") }
+
+      it "returns a kind of RawXForm" do
+        raw_form = form_class.raw(params)
+
+        raw_form.should be_a_kind_of(RawXForm)
+      end
+
+      it "returns a kind of form's class" do
+        raw_form = form_class.raw(params)
+
+        raw_form.should be_a_kind_of(form_class)
+      end
+    end
+
+    context 'without form neither params' do
+      it "returns nil" do
+        form_class.raw(nil).should be_nil
       end
     end
   end
