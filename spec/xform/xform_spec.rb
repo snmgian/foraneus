@@ -19,6 +19,7 @@ describe XForm do
         include ArrayXForm
 
         float :cost
+        float :duration
       end
     end
 
@@ -31,6 +32,12 @@ describe XForm do
         form = form_class.build(:cost => Math::PI.to_s)
 
         form.cost.should == Math::PI
+      end
+
+      it "holds nil for not given params" do
+        form = form_class.build
+
+        form.cost.should be_nil
       end
     end
 
@@ -59,6 +66,12 @@ describe XForm do
         form = form_class.build(:cost => cost)
 
         form.cost.should be(cost)
+      end
+
+      it "holds nil for not given params" do
+        form = form_class.build(:cost => cost)
+
+        form.duration.should be_nil
       end
     end
   end
@@ -138,7 +151,11 @@ describe XForm do
     context 'valid' do
       let(:form) {form_class.build(:cost => Math::PI)}
 
-      it "is true" do
+      it "is true when valid params" do
+        form[:valid?].should be_true
+      end
+
+      it "is true when no params" do
         form[:valid?].should be_true
       end
     end
@@ -146,7 +163,7 @@ describe XForm do
     context 'invalid' do
       let(:form) {form_class.build(:cost => :c)}
 
-      it "is false" do
+      it "is false when invalid params" do
         form[:valid?].should == false
       end
     end
@@ -244,9 +261,14 @@ describe XForm do
       end
     end
 
-    #context 'invalid' do
-      #let(:cost) { 'A' }
+    context 'invalid' do
+      let(:cost) { 'A' }
 
+      it "returns nil" do
+        hash = from_class.build(:cost => cost)
+
+        hash.should be_nil
+      end
       #it "returns a subclass of the form" do
         #form = form_class.build(:cost => cost)
 
@@ -270,7 +292,7 @@ describe XForm do
 
         #form.cost.should be(cost)
       #end
-    #end
+    end
   end
 
   describe '.raw' do
@@ -280,8 +302,11 @@ describe XForm do
         include ArrayXForm
 
         float :cost
+        float :duration
       end
     end
+
+    let(:raw_cost) { "3.14" }
 
     context 'with form' do
       let(:form) { form_class.build }
@@ -299,16 +324,22 @@ describe XForm do
       end
 
       it "holds raw values" do
-        raw_cost = "3.14"
         form = form_class.build(:cost => raw_cost)
         raw_form = form_class.raw(form)
 
         raw_form.cost.should == raw_cost
       end
+
+      it "holds nil for a not given param" do
+        form = form_class.build(:cost => raw_cost)
+        raw_form = form_class.raw(form)
+
+        raw_form.duration.should be_nil
+      end
     end
 
     context 'with params' do
-      let(:params) { Hash.new(:cost => "3.14") }
+      let(:params) { {:cost => raw_cost} }
 
       it "returns a kind of RawXForm" do
         raw_form = form_class.raw(params)
@@ -320,6 +351,18 @@ describe XForm do
         raw_form = form_class.raw(params)
 
         raw_form.should be_a_kind_of(form_class)
+      end
+
+      it "holds raw values" do
+        raw_form = form_class.raw(params)
+
+        raw_form.cost.should == raw_cost
+      end
+
+      it "holds nil for a not given param" do
+        raw_form = form_class.raw(params)
+
+        raw_form.duration.should be_nil
       end
     end
 
