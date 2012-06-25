@@ -23,7 +23,7 @@ describe XForm do
       end
     end
 
-    context 'valid' do
+    context 'when valid' do
       it "returns a form instance" do
         form_class.build.should be_instance_of(form_class)
       end
@@ -41,7 +41,7 @@ describe XForm do
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:cost) { 'A' }
 
       it "returns a subclass of the form" do
@@ -94,7 +94,7 @@ describe XForm do
       form_class.build!(params)
     end
 
-    context 'valid' do
+    context 'when valid' do
       it "returns the result of build" do
         form_class.stub(:build).and_return(:form)
 
@@ -104,7 +104,7 @@ describe XForm do
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:invalid_form) do
         klass = Class.new(form_class) do
           include InvalidXForm
@@ -148,7 +148,7 @@ describe XForm do
       end
     end
 
-    context 'valid' do
+    context 'when valid' do
       let(:form) {form_class.build(:cost => Math::PI)}
 
       it "is true when valid params" do
@@ -160,7 +160,7 @@ describe XForm do
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:form) {form_class.build(:cost => :c)}
 
       it "is false when invalid params" do
@@ -179,7 +179,7 @@ describe XForm do
       end
     end
 
-    context 'valid' do
+    context 'when valid' do
       let(:form) {form_class.build(:cost => Math::PI)}
 
       it "is empty" do
@@ -187,7 +187,7 @@ describe XForm do
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:form) {form_class.build(:cost => :c)}
 
       it "is not empty" do
@@ -252,7 +252,7 @@ describe XForm do
     context 'valid' do
       let(:form) { form_class.build(:cost => Math::PI.to_s) }
 
-      it "returns a hash" do
+      it "is a hash" do
         form[:as_hash].should be_instance_of(Hash)
       end
 
@@ -266,7 +266,7 @@ describe XForm do
     context 'invalid' do
       let(:form) { form_class.build(:cost => 'invalid') }
 
-      it "returns nil" do
+      it "is nil" do
         hash = form[:as_hash]
 
         hash.should be_nil
