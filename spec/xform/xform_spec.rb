@@ -249,7 +249,7 @@ describe XForm do
       end
     end
 
-    context 'valid' do
+    context 'when valid' do
       let(:form) { form_class.build(:cost => Math::PI.to_s) }
 
       it "is a hash" do
@@ -263,7 +263,7 @@ describe XForm do
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:form) { form_class.build(:cost => 'invalid') }
 
       it "is nil" do
