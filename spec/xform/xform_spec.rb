@@ -2,8 +2,7 @@ require 'spec_helper'
 
 describe XForm do
   it "should define a form class" do
-    form_class = Class.new do
-      include XForm
+    form_class = Class.new(XForm) do
       include ArrayXForm
 
       float :cost
@@ -14,8 +13,7 @@ describe XForm do
 
   describe '.build' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
@@ -78,8 +76,7 @@ describe XForm do
 
   describe '.build!' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
@@ -140,8 +137,7 @@ describe XForm do
 
   describe '[:valid?]' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
@@ -171,8 +167,7 @@ describe XForm do
 
   describe '[:errors]' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
@@ -210,8 +205,7 @@ describe XForm do
 
   describe '[:raw_values]' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
@@ -229,8 +223,7 @@ describe XForm do
 
   describe '.float' do # TODO find sth better, like: describe a type definition method
     it "creates a reader method" do
-      form_class = Class.new do
-        include XForm
+      form_class = Class.new(XForm) do
 
         float :cost
       end
@@ -241,8 +234,7 @@ describe XForm do
 
   describe '[:as_hash]' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
@@ -276,8 +268,7 @@ describe XForm do
 
   describe '.raw' do
     let(:form_class) do
-      Class.new do
-        include XForm
+      Class.new(XForm) do
         include ArrayXForm
 
         float :cost
