@@ -1,25 +1,35 @@
 require 'spec_helper'
 
 describe XForm do
-  it "should define a form class" do
-    form_class = Class.new(XForm) do
+
+  let(:form_class) do
+    Class.new(XForm) do
       include ArrayXForm
 
       float :cost
+      float :duration
     end
+  end
 
+  let(:invalid_form_class) do
+    Class.new(form_class) do
+      include InvalidXForm
+    end
+  end
+
+  let(:invalid_form) do
+    invalid_form_class.new
+  end
+
+  let(:cost) { Math::PI }
+  let(:invalid_raw_cost) { 'invalid' }
+  let(:raw_cost) { cost.to_s }
+
+  it "should define a form class" do
     form_class.should be
   end
 
   describe '.build' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-        float :duration
-      end
-    end
 
     context 'when valid' do
       it "returns a form instance" do
@@ -27,9 +37,9 @@ describe XForm do
       end
 
       it "holds the parsed form param" do
-        form = form_class.build(:cost => Math::PI.to_s)
+        form = form_class.build(:cost => raw_cost)
 
-        form.cost.should == Math::PI
+        form.cost.should == cost
       end
 
       it "holds nil for not given params" do
@@ -40,34 +50,33 @@ describe XForm do
     end
 
     context 'when invalid' do
-      let(:cost) { 'A' }
 
       it "returns a subclass of the form" do
-        form = form_class.build(:cost => cost)
+        form = form_class.build(:cost => invalid_raw_cost)
 
         form.should be_a_kind_of(form_class)
       end
 
       it "returns a kind of InvalidXForm" do
-        form = form_class.build(:cost => cost)
+        form = form_class.build(:cost => invalid_raw_cost)
 
         form.should be_a_kind_of(InvalidXForm)
       end
 
       it "returns a kind of RawXForm" do
-        form = form_class.build(:cost => cost)
+        form = form_class.build(:cost => invalid_raw_cost)
 
         form.should be_a_kind_of(RawXForm)
       end
 
       it "holds the invalid cost" do
-        form = form_class.build(:cost => cost)
+        form = form_class.build(:cost => invalid_raw_cost)
 
-        form.cost.should be(cost)
+        form.cost.should be(invalid_raw_cost)
       end
 
       it "holds nil for not given params" do
-        form = form_class.build(:cost => cost)
+        form = form_class.build(:cost => invalid_raw_cost)
 
         form.duration.should be_nil
       end
@@ -75,14 +84,6 @@ describe XForm do
   end
 
   describe '.build!' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-      end
-    end
-
     let(:params) { Hash.new }
 
     it "invokes .build" do
@@ -102,14 +103,6 @@ describe XForm do
     end
 
     context 'when invalid' do
-      let(:invalid_form) do
-        klass = Class.new(form_class) do
-          include InvalidXForm
-        end
-
-        klass.new
-      end
-
       before(:each) do
         form_class.stub(:build).and_return(invalid_form)
       end
@@ -136,16 +129,8 @@ describe XForm do
   end
 
   describe '[:valid?]' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-      end
-    end
-
     context 'when valid' do
-      let(:form) {form_class.build(:cost => Math::PI)}
+      let(:form) {form_class.build(:cost => raw_cost)}
 
       it "is true when valid params" do
         form[:valid?].should be_true
@@ -157,7 +142,7 @@ describe XForm do
     end
 
     context 'when invalid' do
-      let(:form) {form_class.build(:cost => :c)}
+      let(:form) {form_class.build(:cost => invalid_raw_cost)}
 
       it "is false when invalid params" do
         form[:valid?].should == false
@@ -166,16 +151,8 @@ describe XForm do
   end
 
   describe '[:errors]' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-      end
-    end
-
     context 'when valid' do
-      let(:form) {form_class.build(:cost => Math::PI)}
+      let(:form) {form_class.build(:cost => raw_cost)}
 
       it "is empty" do
         form[:errors].should be_empty
@@ -183,7 +160,7 @@ describe XForm do
     end
 
     context 'when invalid' do
-      let(:form) {form_class.build(:cost => :c)}
+      let(:form) {form_class.build(:cost => invalid_raw_cost)}
 
       it "is not empty" do
         form[:errors].should_not be_empty
@@ -197,23 +174,13 @@ describe XForm do
         subject { form[:errors][:cost] }
 
         its(:field_name) { should == :cost }
-        its(:field_value) { should == :c }
+        its(:field_value) { should == invalid_raw_cost }
         its(:expected_type) { should == :float }
       end
     end
   end
 
   describe '[:raw_values]' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-      end
-    end
-
-    let(:raw_cost) { "3.14" }
-
     it "holds the raw cost value" do
       form = form_class.build(:cost => raw_cost)
 
@@ -233,16 +200,8 @@ describe XForm do
   end
 
   describe '[:as_hash]' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-      end
-    end
-
     context 'when valid' do
-      let(:form) { form_class.build(:cost => Math::PI.to_s) }
+      let(:form) { form_class.build(:cost => raw_cost) }
 
       it "is a hash" do
         form[:as_hash].should be_instance_of(Hash)
@@ -251,12 +210,12 @@ describe XForm do
       it "holds the parsed param" do
         hash = form[:as_hash]
 
-        hash[:cost].should == Math::PI
+        hash[:cost].should == cost
       end
     end
 
     context 'when invalid' do
-      let(:form) { form_class.build(:cost => 'invalid') }
+      let(:form) { form_class.build(:cost => invalid_raw_cost) }
 
       it "is nil" do
         hash = form[:as_hash]
@@ -267,17 +226,6 @@ describe XForm do
   end
 
   describe '.raw' do
-    let(:form_class) do
-      Class.new(XForm) do
-        include ArrayXForm
-
-        float :cost
-        float :duration
-      end
-    end
-
-    let(:raw_cost) { "3.14" }
-
     context 'with form' do
       let(:form) { form_class.build }
 
@@ -336,7 +284,7 @@ describe XForm do
       end
     end
 
-    context 'without form neither params' do
+    context 'without form nor params' do
       it "returns nil" do
         form_class.raw(nil).should be_nil
       end

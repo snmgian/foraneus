@@ -45,7 +45,7 @@ class XForm
     @meta[field] = :float
   end
 
-  def self.build(params = Hash.new)
+  def self.build(params = {})
 
     parsed_params = {}
     raw_params = {}
