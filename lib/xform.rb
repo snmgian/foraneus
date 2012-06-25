@@ -30,6 +30,8 @@ module ArrayXForm
       self.instance_variable_get(:@errors)
     elsif key == :raw_values
       self.instance_variable_get(:@raw_values)
+    elsif key == :as_hash
+      self.instance_variable_get(:@hash_values)
     end
   end
 end
@@ -66,13 +68,14 @@ module XForm
         end
       end
 
-      unless !errors.empty?
+      if errors.empty?
         form = self.new
         parsed_params.each do |name, value|
           form.instance_variable_set("@#{name}", value)
         end
         form.instance_variable_set(:@valid, true)
         form.instance_variable_set(:@errors, {})
+        form.instance_variable_set(:@hash_values, parsed_params)
       else
         form_class = Class.new(self) do
           include InvalidXForm
@@ -97,28 +100,6 @@ module XForm
       end
 
       form
-    end
-
-    def build_hash(params = Hash.new)
-      parsed_params = {}
-      errors = {}
-
-      params.each do |name, value|
-        next unless @meta.include?(name)
-
-        parsed_value, error = parse(name, value)
-        unless error
-          parsed_params[name] = parsed_value
-        else
-          errors[name] = FieldError.new(name, value, @meta[name])
-        end
-      end
-
-      if errors.empty?
-        parsed_params
-      else
-        return nil
-      end
     end
 
     def parse(name, value)

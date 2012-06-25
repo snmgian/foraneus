@@ -239,7 +239,7 @@ describe XForm do
     end
   end
 
-  describe '.build_hash' do
+  describe '[:as_hash]' do
     let(:form_class) do
       Class.new do
         include XForm
@@ -250,48 +250,27 @@ describe XForm do
     end
 
     context 'valid' do
+      let(:form) { form_class.build(:cost => Math::PI.to_s) }
+
       it "returns a hash" do
-        form_class.build_hash.should be_instance_of(Hash)
+        form[:as_hash].should be_instance_of(Hash)
       end
 
       it "holds the parsed param" do
-        hash = form_class.build_hash(:cost => Math::PI.to_s)
+        hash = form[:as_hash]
 
         hash[:cost].should == Math::PI
       end
     end
 
     context 'invalid' do
-      let(:cost) { 'A' }
+      let(:form) { form_class.build(:cost => 'invalid') }
 
       it "returns nil" do
-        hash = from_class.build(:cost => cost)
+        hash = form[:as_hash]
 
         hash.should be_nil
       end
-      #it "returns a subclass of the form" do
-        #form = form_class.build(:cost => cost)
-
-        #form.should be_a_kind_of(form_class)
-      #end
-
-      #it "returns a kind of InvalidXForm" do
-        #form = form_class.build(:cost => cost)
-
-        #form.should be_a_kind_of(InvalidXForm)
-      #end
-
-      #it "returns a kind of RawXForm" do
-        #form = form_class.build(:cost => cost)
-
-        #form.should be_a_kind_of(RawXForm)
-      #end
-
-      #it "holds the invalid cost" do
-        #form = form_class.build(:cost => cost)
-
-        #form.cost.should be(cost)
-      #end
     end
   end
 
