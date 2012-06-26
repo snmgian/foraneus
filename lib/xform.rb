@@ -24,14 +24,21 @@ end
 
 module ArrayXForm
   def [](key)
-    if key == :valid?
-      self.instance_variable_get(:@valid)
-    elsif key == :errors
-      self.instance_variable_get(:@errors)
-    elsif key == :raw_values
-      self.instance_variable_get(:@raw_values)
-    elsif key == :as_hash
-      self.instance_variable_get(:@hash_values)
+    ivar = case key
+    when :valid?
+      :@valid
+    when :errors
+      :@errors
+    when :raw_values
+      :@raw_values
+    when :as_hash
+      :@hash_values
+    else
+      nil
+    end
+
+    if ivar
+      self.instance_variable_get(ivar)
     end
   end
 end
