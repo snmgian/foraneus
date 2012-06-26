@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe XForm do
+describe Foraneus::Base do
 
   let(:form_class) do
-    Class.new(XForm) do
-      include ArrayXForm
+    Class.new(Foraneus::Base) do
+      include Foraneus::ArrayXForm
 
       float :cost
       float :duration
@@ -13,7 +13,7 @@ describe XForm do
 
   let(:invalid_form_class) do
     Class.new(form_class) do
-      include InvalidXForm
+      include Foraneus::InvalidXForm
     end
   end
 
@@ -60,13 +60,13 @@ describe XForm do
       it "returns a kind of InvalidXForm" do
         form = form_class.build(:cost => invalid_raw_cost)
 
-        form.should be_a_kind_of(InvalidXForm)
+        form.should be_a_kind_of(Foraneus::InvalidXForm)
       end
 
       it "returns a kind of RawXForm" do
         form = form_class.build(:cost => invalid_raw_cost)
 
-        form.should be_a_kind_of(RawXForm)
+        form.should be_a_kind_of(Foraneus::RawXForm)
       end
 
       it "holds the invalid cost" do
@@ -110,7 +110,7 @@ describe XForm do
       it "raises a FormError" do
         expect {
           form_class.build!
-        }.to raise_error(FormError)
+        }.to raise_error(Foraneus::FormError)
       end
 
       describe 'raised error' do
@@ -190,7 +190,7 @@ describe XForm do
 
   describe '.float' do # TODO find sth better, like: describe a type definition method
     it "creates a reader method" do
-      form_class = Class.new(XForm) do
+      form_class = Class.new(Foraneus::Base) do
 
         float :cost
       end
@@ -225,6 +225,25 @@ describe XForm do
     end
   end
 
+  describe 'unknown array key' do
+    let(:unknown) { :unknown }
+    context 'when valid' do
+      let(:form) { form_class.build(:cost => raw_cost) }
+
+      it 'is nil' do
+        form[unknown].should be_nil
+      end
+    end
+
+    context 'when invalid' do
+      let(:form) { form_class.build(:cost => invalid_raw_cost) }
+
+      it 'is nil' do
+        form[unknown].should be_nil
+      end
+    end
+  end
+
   describe '.raw' do
     context 'with form' do
       let(:form) { form_class.build }
@@ -232,7 +251,7 @@ describe XForm do
       it "returns a kind of RawXForm" do
         raw_form = form_class.raw(form)
 
-        raw_form.should be_a_kind_of(RawXForm)
+        raw_form.should be_a_kind_of(Foraneus::RawXForm)
       end
 
       it "returns a kind of form's class" do
@@ -262,7 +281,7 @@ describe XForm do
       it "returns a kind of RawXForm" do
         raw_form = form_class.raw(params)
 
-        raw_form.should be_a_kind_of(RawXForm)
+        raw_form.should be_a_kind_of(Foraneus::RawXForm)
       end
 
       it "returns a kind of form's class" do
