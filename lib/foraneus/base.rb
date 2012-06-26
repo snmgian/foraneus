@@ -2,6 +2,8 @@ module Foraneus
 
   class Base
 
+    @meta = {}
+
     def self.float(field)
       self.send :attr_reader, field
 
@@ -62,18 +64,16 @@ module Foraneus
     end
 
     def self.parse(name, value)
-      @meta ||= {}
-
       parsed_value = nil
       error = false
 
-      meta = @meta[name]
-      if meta == :float
-        begin
-          parsed_value = Float(value)
-        rescue
-          error = true
-        end
+      parser_code = @meta[name]
+      parser = Foraneus.registry[parser_code]
+
+      begin
+        parsed_value = parser.parse(value)
+      rescue
+        error = true
       end
 
       [parsed_value, error]
