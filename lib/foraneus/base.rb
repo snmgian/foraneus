@@ -64,14 +64,11 @@ module Foraneus
     end
 
     def self.parse(name, value)
-      p name, value, 'base.parse'
       parsed_value = nil
       error = false
 
       parser_code = @meta[name]
-      p parser_code
       parser = Foraneus.registry[parser_code]
-      p parser
 
       begin
         parsed_value = parser.parse(value)

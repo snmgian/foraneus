@@ -39,7 +39,6 @@ describe Foraneus::Base do
       it "holds the parsed form param" do
         form = form_class.build(:cost => raw_cost)
 
-        p form
         form.cost.should == cost
       end
 
