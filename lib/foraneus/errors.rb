@@ -21,11 +21,11 @@ module Foraneus
   end
 
   class ConverterError < StandardError
-    attr_accessor :value, :type_name
+    attr_accessor :value, :converter_name
 
-    def initialize(value, type_name)
+    def initialize(value, converter_name)
       @value = value
-      @type_name = type_name
+      @converter_name = converter_name
     end
   end
 
