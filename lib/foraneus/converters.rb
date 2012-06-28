@@ -1,27 +1,10 @@
+require 'delegate'
+
 module Foraneus
-
-  class TypeException < StandardError
-    attr_accessor :value, :type_name
-
-    def initialize(value, type_name)
-      @value = value
-      @type_name = type_name
-    end
-  end
 
   module Converters
 
-    class ConverterDecorator
-      def self.decorate(converter)
-        def converter.parse(value)
-
-        end
-      end
-    end
-
-    c = ConverterDelegator.new(FloatC.new)
-    require 'delegate'
-    class ConverterDelegator < SimpleDelegator
+    class ConverterDecorator < SimpleDelegator
       def initialize(converter)
         super(converter)
         @source = converter
@@ -32,8 +15,8 @@ module Foraneus
 
         begin
           @source.parse(value)
-        #rescue
-          #raise Foraneus::TypeException.new(value, self.code_name)
+        rescue
+          raise Foraneus::ConverterError.new(value, @source.code_name)
         end
       end
     end
@@ -49,17 +32,6 @@ module Foraneus
       end
 
       def register
-      end
-    end
-
-    class FloatC < AbstractConverter
-
-      def code_name
-        :float
-      end
-
-      def parse(value)
-        Float(value)
       end
     end
   end

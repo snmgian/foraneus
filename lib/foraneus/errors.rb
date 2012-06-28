@@ -20,4 +20,13 @@ module Foraneus
     end
   end
 
+  class ConverterError < StandardError
+    attr_accessor :value, :type_name
+
+    def initialize(value, type_name)
+      @value = value
+      @type_name = type_name
+    end
+  end
+
 end

@@ -6,17 +6,20 @@ module Foraneus
     @registry
   end
 
-  def self.register(parser)
-    @registry[parser.code_name] = parser
+  def self.register(converter_class)
+
+    decorated = Converters::ConverterDecorator.new(converter_class.new)
+    @registry[decorated.code_name] = decorated 
   end
 end
 
 [
   :arrayable,
   :base,
+  :converters,
   :errors,
   :markers,
-  :types,
+  :simple_converters,
 ].each { |f| require_relative "foraneus/#{f}" }
 
-Foraneus.register(Foraneus::Types::Float)
+Foraneus.register(Foraneus::Converters::Float)
