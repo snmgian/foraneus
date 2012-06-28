@@ -1,22 +1,5 @@
 require 'spec_helper'
 
-    class ConverterDecorator < SimpleDelegator
-      def initialize(converter)
-        super(converter)
-        @source = converter
-      end
-
-      def parse(value)
-        return nil if value.nil?
-
-        begin
-          @source.parse(value)
-        rescue
-          raise Foraneus::ConverterError.new(value, @source.code_name)
-        end
-      end
-    end
-
 describe Foraneus::Converters::ConverterDecorator do
 
   let(:converter) do
