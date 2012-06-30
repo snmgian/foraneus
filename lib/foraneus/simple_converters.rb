@@ -31,6 +31,17 @@ module Foraneus
       end
     end
 
+    class Integer < AbstractConverter
+
+      def code_name
+        :integer
+      end
+
+      def parse(value)
+        Kernel.Integer(value)
+      end
+    end
+
     class String < AbstractConverter
 
       def code_name

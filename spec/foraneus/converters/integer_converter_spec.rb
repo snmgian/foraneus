@@ -1,18 +1,18 @@
 require 'spec_helper'
 
-describe Foraneus::Converters::Float do
+describe Foraneus::Converters::Integer do
 
-  its(:code_name) { should be(:float) }
+  its(:code_name) { should be(:integer) }
 
   describe 'parse' do
     context 'with valid values' do
-      let(:number) { 2.3412 }
+      let(:number) { 2 }
       let(:raw_number) { number.to_s }
 
-      it "returns a float number" do
+      it "returns an integer number" do
         parsed = subject.parse(raw_number)
         
-        parsed.should be_a(Float)
+        parsed.should be_a(Integer)
       end
 
       it "parses the number" do
@@ -22,13 +22,13 @@ describe Foraneus::Converters::Float do
       end
 
       context 'with big ones' do
-        let(:big_number) { (11 ** 20) + 0.33 }
+        let(:big_number) { (11 ** 20) }
         let(:raw_big_number) { big_number.to_s }
 
         it "also returns a float number" do
           parsed = subject.parse(raw_big_number)
           
-          parsed.should be_a(Float)
+          parsed.should be_a(Integer)
         end
 
         it "also parses the number" do
