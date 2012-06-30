@@ -31,6 +31,21 @@ module Foraneus
       end
     end
 
+    class String < AbstractConverter
+
+      def code_name
+        :string
+      end
+
+      def parse(value)
+        if value.is_a?(::String)
+          value
+        else
+          value.to_s
+        end
+      end
+    end
+
   end
 end
 
