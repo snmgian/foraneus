@@ -10,7 +10,15 @@ module Foraneus
 
     decorated = Converters::ConverterDecorator.new(converter_class.new)
     @registry[decorated.code_name] = decorated 
+
+    Foraneus::Base.singleton_class.send :define_method, decorated.code_name do |field|
+      self.send :attr_reader, field
+
+      @meta ||= {}
+      @meta[field] = :float
+    end
   end
+
 end
 
 [

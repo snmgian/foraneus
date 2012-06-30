@@ -2,15 +2,6 @@ module Foraneus
 
   class Base
 
-    @meta = {}
-
-    def self.float(field)
-      self.send :attr_reader, field
-
-      @meta ||= {}
-      @meta[field] = :float
-    end
-
     def self.build(params = {})
 
       parsed_params = {}
