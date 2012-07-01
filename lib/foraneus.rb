@@ -26,7 +26,9 @@ end
   :base,
   :converters,
   :errors,
+  :form_builder,
   :markers,
+  :raw_form_builder,
   :simple_converters,
 ].each { |f| require_relative "foraneus/#{f}" }
 
