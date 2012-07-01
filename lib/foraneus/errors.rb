@@ -20,9 +20,12 @@ module Foraneus
     end
   end
 
+  # Raised on an attempt to parse an invalid value
   class ConverterError < StandardError
     attr_accessor :value, :converter_name
 
+    # @param [String] value The value attempted to be parsed
+    # @param [Symbol] converter_name Name of the converter
     def initialize(value, converter_name)
       @value = value
       @converter_name = converter_name

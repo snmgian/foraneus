@@ -1,6 +1,18 @@
 module Foraneus
 
+  # Adds Hash read-only capabilities.
   module ArrayValueSet
+    
+    # Returns the value associated with a key
+    #
+    # Possible keys are:
+    #  - valid?
+    #  - errors
+    #  - raw_values
+    #  - as_hash
+    #
+    # @param [Symbol] key The key for the value to retrieve
+    # @return [Object, nil] The value associated with key, or nil if the key is unknown
     def [](key)
       ivar = case key
       when :valid?
