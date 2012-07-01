@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Foraneus::Converters::Float do
 
-  its(:code_name) { should be(:float) }
+  its(:name) { should be(:float) }
 
   describe 'parse' do
     context 'with valid values' do

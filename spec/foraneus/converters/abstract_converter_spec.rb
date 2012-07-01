@@ -5,7 +5,7 @@ describe Foraneus::Converters::AbstractConverter do
   describe 'code_name' do
     it "raises a NotImplementedError" do
       expect {
-        subject.code_name
+        subject.name
       }.to raise_error(NotImplementedError)
     end
   end
@@ -13,7 +13,7 @@ describe Foraneus::Converters::AbstractConverter do
   describe 'parse' do
     it "raises a NotImplementedError" do
       expect {
-        subject.parse
+        subject.parse(nil)
       }.to raise_error(NotImplementedError)
     end
   end

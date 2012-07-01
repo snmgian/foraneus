@@ -35,7 +35,7 @@ module Foraneus
 
       # Returns the of this converter
       # @return [String]
-      def code_name
+      def name
         raise NotImplementedError
       end
 

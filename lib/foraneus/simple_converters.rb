@@ -5,7 +5,7 @@ module Foraneus
   module Converters
 
     class Boolean < AbstractConverter
-      def code_name
+      def name
         :boolean
       end
 
@@ -22,7 +22,7 @@ module Foraneus
 
     class Float < AbstractConverter
 
-      def code_name
+      def name
         :float
       end
 
@@ -33,7 +33,7 @@ module Foraneus
 
     class Integer < AbstractConverter
 
-      def code_name
+      def name
         :integer
       end
 
@@ -44,7 +44,7 @@ module Foraneus
 
     class String < AbstractConverter
 
-      def code_name
+      def name
         :string
       end
 

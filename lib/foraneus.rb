@@ -9,9 +9,9 @@ module Foraneus
   def self.register(converter_class)
 
     decorated = Converters::ConverterDecorator.new(converter_class.new)
-    @registry[decorated.code_name] = decorated 
+    @registry[decorated.name] = decorated 
 
-    self.define_type_method(decorated.code_name)
+    self.define_type_method(decorated.name)
   end
 
   def self.define_type_method(name)

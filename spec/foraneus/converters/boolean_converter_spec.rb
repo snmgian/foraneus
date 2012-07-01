@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Foraneus::Converters::Boolean do
 
-  its(:code_name) { should be(:boolean) }
+  its(:name) { should be(:boolean) }
 
   describe 'parse' do
     it "returns true with true" do

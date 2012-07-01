@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Foraneus::Converters::String do
 
-  its(:code_name) { should be(:string) }
+  its(:name) { should be(:string) }
 
   describe 'parse' do
     it "returns the string" do

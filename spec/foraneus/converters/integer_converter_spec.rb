@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Foraneus::Converters::Integer do
 
-  its(:code_name) { should be(:integer) }
+  its(:name) { should be(:integer) }
 
   describe 'parse' do
     context 'with valid values' do
