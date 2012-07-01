@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.summary         = 'TODO PLEASE'
   s.description     = 'TODO PLEASE'
 
-  s.files           = Dir.glob("{lib}/**/*") + %w(LICENSE README.md ROADMAP.md CHANGELOG.md)
+  s.files           = Dir.glob("{lib}/**/*") + %w(COPYING COPYING.LESSER README.md)
 
   s.add_development_dependency('rspec', '2.10.0')
   s.add_development_dependency('simplecov', '0.6.4')
