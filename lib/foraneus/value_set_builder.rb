@@ -1,16 +1,16 @@
 module Foraneus
-  module FormBuilder
+  module ValueSetBuilder
 
-    def self.build(form_class, meta, params = {})
+    def self.build(vs_class, meta, params = {})
 
       parsed_params, raw_params, errors = parse_params(meta, params)
 
       if errors.empty?
-        form = form_class.new
+        form = vs_class.new
         set_instance_vars(form, parsed_params)
         form.instance_variable_set(:@hash_values, parsed_params)
       else
-        form = create_invalid_form(form_class)
+        form = create_invalid_value_set(vs_class)
         set_instance_vars(form, raw_params)
       end
 
@@ -20,10 +20,10 @@ module Foraneus
       form
     end
 
-    def self.create_invalid_form(form_class)
-      form_class = Class.new(form_class) do
-        include Foraneus::InvalidXForm
-        include Foraneus::RawXForm
+    def self.create_invalid_value_set(vs_class)
+      form_class = Class.new(vs_class) do
+        include Foraneus::InvalidValueSet
+        include Foraneus::RawValueSet
       end
       form = form_class.new
     end
@@ -57,7 +57,7 @@ module Foraneus
         unless error
           parsed_params[name] = parsed_value
         else
-          errors[name] = Foraneus::FieldError.new(name, value, meta[name])
+          errors[name] = Foraneus::ValueError.new(name, value, meta[name])
         end
       end
 

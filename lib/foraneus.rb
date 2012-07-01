@@ -11,7 +11,11 @@ module Foraneus
     decorated = Converters::ConverterDecorator.new(converter_class.new)
     @registry[decorated.code_name] = decorated 
 
-    Foraneus::Base.singleton_class.send :define_method, decorated.code_name do |field|
+    self.define_type_method(decorated.code_name)
+  end
+
+  def self.define_type_method(name)
+    Foraneus::ValueSet.singleton_class.send :define_method, name do |field|
       self.send :attr_reader, field
 
       @meta ||= {}
@@ -23,13 +27,13 @@ end
 
 [
   :arrayable,
-  :base,
   :converters,
   :errors,
-  :form_builder,
   :markers,
-  :raw_form_builder,
   :simple_converters,
+  :raw_value_set_builder,
+  :value_set,
+  :value_set_builder,
 ].each { |f| require_relative "foraneus/#{f}" }
 
 Foraneus.register(Foraneus::Converters::Float)

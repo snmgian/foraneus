@@ -1,8 +1,8 @@
 module Foraneus
-  module RawXFormBuilder
+  module RawValueSetBuilder
 
     def self.build(form_class, meta, form_or_params)
-      if form_or_params.is_a?(Foraneus::Base)
+      if form_or_params.is_a?(Foraneus::ValueSet)
         self.raw_form(form_or_params)
       elsif form_or_params.is_a?(Hash)
         self.raw_params(form_class, meta, form_or_params)
@@ -11,7 +11,7 @@ module Foraneus
 
     def self.raw_form(form)
       raw_form_class = Class.new(form.class) do
-        include Foraneus::RawXForm
+        include Foraneus::RawValueSet
       end
 
       raw_form = raw_form_class.new
@@ -22,7 +22,7 @@ module Foraneus
     end
 
     def self.raw_params(form_class, meta, params)
-      form = Foraneus::FormBuilder.build(form_class, meta, params)
+      form = Foraneus::ValueSetBuilder.build(form_class, meta, params)
       raw_form(form)
     end
 

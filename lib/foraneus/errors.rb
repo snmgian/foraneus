@@ -1,22 +1,22 @@
 module Foraneus
 
-  class FieldError
-    attr_accessor :field_name
-    attr_accessor :field_value
+  class ValueError
+    attr_accessor :name
+    attr_accessor :value
     attr_accessor :expected_type
 
-    def initialize(field_name, field_value, expected_type)
-      @field_name = field_name
-      @field_value = field_value
+    def initialize(name, value, expected_type)
+      @name = name
+      @value = value
       @expected_type = expected_type
     end
   end
 
-  class FormError < StandardError
-    attr_accessor :invalid_form
+  class ValueSetError < StandardError
+    attr_accessor :value_set
 
-    def initialize(invalid_form)
-      @invalid_form = invalid_form
+    def initialize(value_set)
+      @value_set = value_set
     end
   end
 

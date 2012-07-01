@@ -1,7 +1,7 @@
 module Foraneus
 
-  module InvalidXForm; end
+  module InvalidValueSet; end
 
-  module RawXForm; end
+  module RawValueSet; end
 
 end

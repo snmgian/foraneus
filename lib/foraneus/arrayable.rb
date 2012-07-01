@@ -1,6 +1,6 @@
 module Foraneus
 
-  module ArrayXForm
+  module ArrayValueSet
     def [](key)
       ivar = case key
       when :valid?
