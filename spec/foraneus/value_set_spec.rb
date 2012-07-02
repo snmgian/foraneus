@@ -4,7 +4,7 @@ describe Foraneus::ValueSet do
 
   let(:vs_class) do
     Class.new(Foraneus::ValueSet) do
-      include Foraneus::ArrayValueSet
+      include Foraneus::HashlikeValueSet
 
       float :cost
       float :duration

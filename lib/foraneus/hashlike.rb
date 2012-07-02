@@ -1,7 +1,7 @@
 module Foraneus
 
-  # Adds Hash read-only capabilities.
-  module ArrayValueSet
+  # Adds hash read-only capabilities.
+  module HashlikeValueSet
     
     # Returns the value associated with a key
     #

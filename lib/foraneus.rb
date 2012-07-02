@@ -26,9 +26,9 @@ module Foraneus
 end
 
 [
-  :arrayable,
   :converters,
   :errors,
+  :hashlike,
   :markers,
   :simple_converters,
   :raw_value_set_builder,
