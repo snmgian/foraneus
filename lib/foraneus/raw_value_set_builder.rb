@@ -1,6 +1,11 @@
 module Foraneus
   module RawValueSetBuilder
 
+    # Builds a RawValueSet.
+    # @param [Class] form_class A ValueSet class
+    # @param [Hash] meta Meta information about fields and converters
+    # @param [ValueSet, Hash] form_or_params ValueSet or Hash that will be used to build a RawValueSet
+    # @return [RawValueSet]
     def self.build(form_class, meta, form_or_params)
       if form_or_params.is_a?(Foraneus::ValueSet)
         self.raw_form(form_or_params)
@@ -9,18 +14,24 @@ module Foraneus
       end
     end
 
-    def self.raw_form(form)
-      raw_form_class = Class.new(form.class) do
+    # Builds a RawValueSet from a ValueSet object
+    # @api private
+    # @param [ValueSet] value_set
+    # @return [RawValueSet]
+    def self.raw_form(value_set)
+      raw_vs_class = Class.new(value_set.class) do
         include Foraneus::RawValueSet
       end
 
-      raw_form = raw_form_class.new
-      form[:raw_values].each do |name, value|
-        raw_form.instance_variable_set("@#{name}", value)
+      raw_vs = raw_vs_class.new
+      value_set[:raw_values].each do |name, value|
+        raw_vs.instance_variable_set("@#{name}", value)
       end
-      raw_form
+      raw_vs
     end
 
+    # Builds a value_set and returns a RawValueSet
+    # @api private
     def self.raw_params(form_class, meta, params)
       form = Foraneus::ValueSetBuilder.build(form_class, meta, params)
       raw_form(form)
