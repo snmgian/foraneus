@@ -1,4 +1,6 @@
 module Foraneus
+
+  # Module for building value_sets
   module ValueSetBuilder
 
     # Builds an instance of a value_set
@@ -36,7 +38,7 @@ module Foraneus
     #
     # @api private
     #
-    # @param [Class<? extends ValueSet>] Subclass of ValueSet from which the invalid value_set
+    # @param [Class<? extends ValueSet>] vs_class Subclass of ValueSet from which the invalid value_set
     #   will be instantiated
     #
     # @return [ValueSet] A kind of ValueSet, mixed with {InvalidValueSet} and {RawValueSet}
@@ -54,8 +56,8 @@ module Foraneus
     # @api private
     #
     # @param [Hash<Symbol, Symbol>] meta (see .build)
-    # @param [Symbol] Name of the field to be parsed
-    # @param [String] Value to be parsed
+    # @param [Symbol] name Name of the field to be parsed
+    # @param [String] value Value to be parsed
     #
     # @return [Array] An array of two elements. The first of them is the result of the parsing, 
     #   and the last one is a boolean value that indicates if an error occured during the parsing.
@@ -114,7 +116,7 @@ module Foraneus
     # @api private
     #
     # @param [Object] o The object to set the instance variables
-    # @param [Hash<Symbol, Object] A hash with the names and values of instance variables that will be set.
+    # @param [Hash<Symbol, Object>] params A hash with the names and values of instance variables that will be set.
     #
     # @return [Object] The received object with the instance variables set
     def self.set_instance_vars(o, params)

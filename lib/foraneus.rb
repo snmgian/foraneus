@@ -1,11 +1,19 @@
+# Foraneus is library for parsing external data.
+#
+# It allows to define value_sets that specify how the external data is structured and how should be parsed.
 module Foraneus
 
   @registry = {}
 
+  # Returns the converters registry
+  # @return [Hash<Symbol, ConverterDecorator>] A hash of registered converters
   def self.registry
     @registry
   end
 
+  # Registers a converter.
+  #
+  # @param [Class<? extends Converters::AbstractConverter>] converter_class The converter
   def self.register(converter_class)
 
     decorated = Converters::ConverterDecorator.new(converter_class.new)
@@ -14,6 +22,13 @@ module Foraneus
     self.define_type_method(decorated.name)
   end
 
+  # Defines a class method in {ValueSet} that corresponds to a converter.
+  #
+  # The defined method will be invoked when definig a value_set
+  #
+  # @api private
+  #
+  # @param [String] name The name of the converter
   def self.define_type_method(name)
     Foraneus::ValueSet.singleton_class.send :define_method, name do |field|
       self.send :attr_reader, field

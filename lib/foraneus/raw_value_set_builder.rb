@@ -1,4 +1,6 @@
 module Foraneus
+  
+  # Module for building raw value_sets
   module RawValueSetBuilder
 
     # Builds a RawValueSet.

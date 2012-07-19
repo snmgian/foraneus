@@ -1,5 +1,8 @@
 module Foraneus
 
+  # Base class from which all the value_sets should inherit.
+  #
+  # Concrete classes model a set of params/values that are parsed from an external source (like HTTP query params)
   class ValueSet
 
     # Builds an instance of ValueSet that conforms with its fields specification.

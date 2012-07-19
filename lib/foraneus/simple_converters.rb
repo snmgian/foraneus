@@ -5,6 +5,8 @@ module Foraneus
 
     # Boolean converter. 
     class Boolean < AbstractConverter
+
+      # @see {AbstractConverter#see}
       def name
         :boolean
       end
@@ -26,6 +28,7 @@ module Foraneus
     # Float converter.
     class Float < AbstractConverter
 
+      # @see {AbstractConverter#see}
       def name
         :float
       end
@@ -40,6 +43,7 @@ module Foraneus
     # Integer converter.
     class Integer < AbstractConverter
 
+      # @see {AbstractConverter#see}
       def name
         :integer
       end
@@ -51,8 +55,10 @@ module Foraneus
       end
     end
 
+    # String converter.
     class String < AbstractConverter
 
+      # @see {AbstractConverter#see}
       def name
         :string
       end
