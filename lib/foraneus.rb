@@ -24,7 +24,7 @@ module Foraneus
 
   # Defines a class method in {ValueSet} that corresponds to a converter.
   #
-  # The defined method will be invoked when definig a value_set
+  # The defined method will be invoked when defining a value_set
   #
   # @api private
   #
@@ -34,7 +34,7 @@ module Foraneus
       self.send :attr_reader, field
 
       @meta ||= {}
-      @meta[field] = :float
+      @meta[field] = name
     end
   end
 
@@ -51,4 +51,7 @@ end
   :value_set_builder,
 ].each { |f| require_relative "foraneus/#{f}" }
 
+Foraneus.register(Foraneus::Converters::Boolean)
 Foraneus.register(Foraneus::Converters::Float)
+Foraneus.register(Foraneus::Converters::Integer)
+Foraneus.register(Foraneus::Converters::String)
