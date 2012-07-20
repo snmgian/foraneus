@@ -81,6 +81,15 @@ describe Foraneus::ValueSet do
         value_set.duration.should be_nil
       end
     end
+
+    context 'with strings' do
+      it "holds the value" do
+        value_set = vs_class.build('cost' => raw_cost)
+
+        value_set.cost.should == cost
+      end
+    end
+
   end
 
   describe '.build!' do
@@ -186,6 +195,14 @@ describe Foraneus::ValueSet do
 
       value_set[:raw_values][:cost].should == raw_cost
     end
+
+    context 'with strings' do
+      it "holds the raw_value" do
+        value_set = vs_class.build('cost' => raw_cost)
+
+        value_set[:raw_values]['cost'].should == raw_cost
+      end
+    end
   end
 
   describe '.float' do # TODO find sth better, like: describe a type definition method
@@ -211,6 +228,16 @@ describe Foraneus::ValueSet do
         hash = value_set[:as_hash]
 
         hash[:cost].should == cost
+      end
+
+      context 'with strings' do
+        let(:value_set) { vs_class.build('cost' => raw_cost) }
+
+        it "holds the parsed param" do
+          hash = value_set[:as_hash]
+
+          hash[:cost].should == cost
+        end
       end
     end
 
@@ -300,6 +327,16 @@ describe Foraneus::ValueSet do
         raw_vs = vs_class.raw(params)
 
         raw_vs.duration.should be_nil
+      end
+
+      context 'with strings' do
+        let(:params) { {'cost' => raw_cost} }
+
+        it "holds raw values" do
+          raw_vs = vs_class.raw(params)
+
+          raw_vs.cost.should == raw_cost
+        end
       end
     end
 

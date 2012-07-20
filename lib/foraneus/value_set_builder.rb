@@ -14,7 +14,7 @@ module Foraneus
     # @return [ValueSet] An instance of (or an instance of subclass of) vs_class
     def self.build(vs_class, meta, params = {})
 
-      parsed_params, raw_params, errors = parse_params(meta, params)
+      parsed_params, raw_params, errors = self.parse_params(meta, params)
 
       if errors.empty?
         form = vs_class.new
@@ -97,14 +97,15 @@ module Foraneus
       errors = {}
 
       params.each do |name, value|
-        next unless meta.include?(name)
+        normalized_name = name.to_sym
+        next unless meta.include?(normalized_name)
 
         raw_params[name] = value
-        parsed_value, error = parse(meta, name, value)
+        parsed_value, error = self.parse(meta, normalized_name, value)
         unless error
-          parsed_params[name] = parsed_value
+          parsed_params[normalized_name] = parsed_value
         else
-          errors[name] = Foraneus::ValueError.new(name, value, meta[name])
+          errors[normalized_name] = Foraneus::ValueError.new(normalized_name, value, meta[normalized_name])
         end
       end
 
