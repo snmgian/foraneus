@@ -3,7 +3,7 @@ require 'delegate'
 module Foraneus
   module Converters
 
-    # Boolean converter. 
+    # Boolean converter.
     class Boolean < AbstractConverter
 
       # @see {AbstractConverter#see}
@@ -12,8 +12,10 @@ module Foraneus
       end
 
       # @see AbstractConverter#parse
+      #
       # @param [String] value The value to be parsed
-      # @return [Boolean] Returns true only if value == 'true'
+      #
+      # @return [Boolean] True only if value == 'true' || true
       def parse(value)
         if value == true
           true
@@ -34,7 +36,8 @@ module Foraneus
       end
 
       # @see AbstractConverter#parse
-      # @return [Float] Returns a float number
+      #
+      # @return [Float] A float number
       def parse(value)
         Kernel.Float(value)
       end
@@ -49,7 +52,8 @@ module Foraneus
       end
 
       # @see AbstractConverter#parse
-      # @return [Integer] Returns an integer number
+      #
+      # @return [Integer] An integer number
       def parse(value)
         Kernel.Integer(value)
       end
@@ -64,13 +68,10 @@ module Foraneus
       end
 
       # @see AbstractConverter#parse
-      # @return [String] Returns a String reprensentation of the given value.
+      #
+      # @return [String] A String reprensentation of the given value.
       def parse(value)
-        if value.is_a?(::String)
-          value
-        else
-          value.to_s
-        end
+        value.to_s
       end
     end
 

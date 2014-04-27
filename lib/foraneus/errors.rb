@@ -25,7 +25,7 @@ module Foraneus
     end
   end
 
-  # Raised on an attempt to create a value_set from invalid value
+  # Raised on an attempt to create a value_set from invalid value.
   class ValueSetError < StandardError
 
     # @!attribute value_set
@@ -38,13 +38,13 @@ module Foraneus
     end
   end
 
-  # Raised on an attempt to parse an invalid value
+  # Raised on an attempt to parse an invalid value.
   class ConverterError < StandardError
 
     # @!attribute value
     #   @return [String] Value attempted to be parsed
     attr_accessor :value
-    
+
     # @!attribute value
     #   @return [String] Name of the converter that raised the error
     attr_accessor :converter_name

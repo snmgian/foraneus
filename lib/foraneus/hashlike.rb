@@ -2,8 +2,8 @@ module Foraneus
 
   # Adds hash read-only capabilities.
   module HashlikeValueSet
-    
-    # Returns the value associated with a key
+
+    # Returns the value associated with a key.
     #
     # Possible keys are:
     #  - valid?
@@ -12,6 +12,7 @@ module Foraneus
     #  - as_hash
     #
     # @param [Symbol] key The key for the value to retrieve
+    #
     # @return [Object, nil] The value associated with key, or nil if the key is unknown
     def [](key)
       ivar = case key
