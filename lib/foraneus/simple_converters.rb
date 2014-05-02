@@ -1,77 +1,51 @@
-require 'delegate'
-
-module Foraneus
+class Foraneus
   module Converters
 
-    # Boolean converter.
-    class Boolean < AbstractConverter
-
-      # @see {AbstractConverter#see}
-      def name
-        :boolean
-      end
-
-      # @see AbstractConverter#parse
-      #
-      # @param [String] value The value to be parsed
-      #
-      # @return [Boolean] True only if value == 'true' || true
-      def parse(value)
-        if value == true
-          true
-        elsif value == 'true'
+    class Boolean
+      def parse(s)
+        if s == 'true'
           true
         else
           false
         end
       end
-    end
 
-    # Float converter.
-    class Float < AbstractConverter
-
-      # @see {AbstractConverter#see}
-      def name
-        :float
-      end
-
-      # @see AbstractConverter#parse
-      #
-      # @return [Float] A float number
-      def parse(value)
-        Kernel.Float(value)
+      def raw(v)
+        if v
+          'true'
+        else
+          'false'
+        end
       end
     end
 
-    # Integer converter.
-    class Integer < AbstractConverter
-
-      # @see {AbstractConverter#see}
-      def name
-        :integer
+    class Float
+      def parse(s)
+        Kernel.Float(s)
       end
 
-      # @see AbstractConverter#parse
-      #
-      # @return [Integer] An integer number
-      def parse(value)
-        Kernel.Integer(value)
+      def raw(v)
+        v.to_s
       end
     end
 
-    # String converter.
-    class String < AbstractConverter
-
-      # @see {AbstractConverter#see}
-      def name
-        :string
+    class Integer
+      def parse(s)
+        Kernel.Integer(s)
       end
 
-      # @see AbstractConverter#parse
-      #
-      # @return [String] A String reprensentation of the given value.
-      def parse(value)
-        value.to_s
+      def raw(v)
+        v.to_s
+      end
+    end
+
+    class String
+      def parse(s)
+        s
+      end
+
+      def raw(v)
+        v
       end
     end
 

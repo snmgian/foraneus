@@ -2,20 +2,18 @@ require 'spec_helper'
 
 describe Foraneus::Converters::Float do
 
-  its(:name) { should be(:float) }
-
-  describe 'parse' do
+  describe '#parse' do
     context 'with valid values' do
       let(:number) { 2.3412 }
       let(:raw_number) { number.to_s }
 
-      it "returns a float number" do
+      it 'returns a float number' do
         parsed = subject.parse(raw_number)
-        
+
         parsed.should be_a(Float)
       end
 
-      it "parses the number" do
+      it 'parses the number' do
         parsed = subject.parse(raw_number)
 
         parsed.should == number
@@ -25,13 +23,13 @@ describe Foraneus::Converters::Float do
         let(:big_number) { (11 ** 20) + 0.33 }
         let(:raw_big_number) { big_number.to_s }
 
-        it "also returns a float number" do
+        it 'also returns a float number' do
           parsed = subject.parse(raw_big_number)
-          
+
           parsed.should be_a(Float)
         end
 
-        it "also parses the number" do
+        it 'also parses the number' do
           parsed = subject.parse(raw_big_number)
 
           parsed.should == big_number
@@ -50,7 +48,7 @@ describe Foraneus::Converters::Float do
     end
 
     context 'with empty values' do
-      it "raises an error" do
+      it 'raises an error' do
         expect {
           subject.parse('')
         }.to raise_error
@@ -58,11 +56,17 @@ describe Foraneus::Converters::Float do
     end
 
     context 'with nil values' do
-      it "raises an error" do
+      it 'raises an error' do
         expect {
           subject.parse(nil)
         }.to raise_error
       end
+    end
+  end
+
+  describe '#raw' do
+    it 'returns a string representation' do
+      subject.raw(2.34).should eq('2.34')
     end
   end
 end

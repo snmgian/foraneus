@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe Foraneus::Converters::Integer do
 
-  its(:name) { should be(:integer) }
-
-  describe 'parse' do
+  describe '#parse' do
     context 'with valid values' do
       let(:number) { 2 }
       let(:raw_number) { number.to_s }
@@ -25,7 +23,7 @@ describe Foraneus::Converters::Integer do
         let(:big_number) { (11 ** 20) }
         let(:raw_big_number) { big_number.to_s }
 
-        it 'also returns a float number' do
+        it 'also returns an integer' do
           parsed = subject.parse(raw_big_number)
 
           parsed.should be_a(Integer)
@@ -65,4 +63,11 @@ describe Foraneus::Converters::Integer do
       end
     end
   end
+
+  describe '#raw' do
+    it 'returns a string representation' do
+      subject.raw(2).should eq('2')
+    end
+  end
+
 end
