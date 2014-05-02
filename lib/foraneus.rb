@@ -1,17 +1,25 @@
+require_relative 'foraneus/converters/boolean'
+require_relative 'foraneus/converters/decimal'
+require_relative 'foraneus/converters/float'
+require_relative 'foraneus/converters/integer'
+require_relative 'foraneus/converters/string'
 require_relative 'foraneus/errors'
-require_relative 'foraneus/simple_converters'
 
 # Foraneus is library for parsing external data.
 #
 # It allows to define value_sets that specify how the external data is structured
 #   and how it should be parsed.
-
 class Foraneus
 
   def initialize(data = {})
     @errors = {}
 
     @data = data.dup
+  end
+
+  def self.decimal(name, *args)
+    converter = Foraneus::Converters::Decimal.new(*args)
+    field(name, converter)
   end
 
   def self.integer(name)
