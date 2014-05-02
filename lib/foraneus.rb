@@ -1,4 +1,5 @@
 require_relative 'foraneus/converters/boolean'
+require_relative 'foraneus/converters/date'
 require_relative 'foraneus/converters/decimal'
 require_relative 'foraneus/converters/float'
 require_relative 'foraneus/converters/integer'
@@ -15,6 +16,11 @@ class Foraneus
     @errors = {}
 
     @data = data.dup
+  end
+
+  def self.date(name, *args)
+    converter = Foraneus::Converters::Date.new(*args)
+    field(name, converter)
   end
 
   def self.decimal(name, *args)

@@ -5,8 +5,6 @@ describe Foraneus::Converters::Decimal do
   subject(:converter) { Foraneus::Converters::Decimal.new }
 
   describe '#parse' do
-    let(:s) { '1,234.56' }
-
     it 'parses a decimal representation' do
       s = '1,234.56'
       n = BigDecimal.new('1234.56')
