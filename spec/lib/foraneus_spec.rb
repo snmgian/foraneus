@@ -26,9 +26,25 @@ describe Foraneus do
 
       its([:delay]) { should eq('5') }
 
+      its(:data) { should include(:delay => 5) }
+
+      its([]) { should include(:delay => '5') }
+
       it { should be_valid }
 
       its([:errors]) { should be_empty }
+
+      context 'when strings as keys' do
+        subject(:form) { form_spec.parse('delay' => '5') }
+
+        its(['delay']) { should eq('5') }
+
+        its([:delay]) { should eq('5') }
+
+        its(:data) { should include('delay' => 5) }
+
+        its([]) { should include('delay' => '5') }
+      end
     end
 
     context 'with non parseable data' do
@@ -65,12 +81,28 @@ describe Foraneus do
   describe '.raw' do
     subject(:form) { form_spec.raw(:delay => 5) }
 
+    its(:data) { should include(:delay => 5) }
+
     its(:delay) { should eq(5) }
 
     its([:delay]) { should eq('5') }
 
+    its([]) { should include(:delay => '5') }
+
     it { should be_valid }
 
     its([:errors]) { should be_empty }
+
+    context 'when strings as keys' do
+      subject(:form) { form_spec.raw('delay' => 5) }
+
+      its(:data) { should include('delay' => 5) }
+
+      its(['delay']) { should eq('5') }
+
+      its([:delay]) { should eq('5') }
+
+      its([]) { should include('delay' => '5') }
+    end
   end
 end

@@ -68,7 +68,7 @@ class Foraneus
     raw_data.each do |k, v|
       field = k.to_s
       converter = fields[field]
-      continue unless converter
+      next unless converter
 
       instance[k] = v
       begin
@@ -87,30 +87,32 @@ class Foraneus
   def self.raw(data)
     instance = self.new
 
-    parsed_data = {}
     data.each do |k, v|
       next unless fields.has_key?(k.to_s)
       instance.send("#{k}=", v)
       converter = fields[k.to_s]
       s = converter.raw(v)
       instance[k] = s
-      parsed_data[k.to_s] = v
+      instance.data[k] = v
     end
 
-    instance.data = parsed_data
     instance
   end
 
-  def [](m)
+  def [](m = nil)
     if m == :errors
       @errors
+    elsif m.nil?
+      @raw_data
     else
-      @raw_data[m.to_s]
+      @raw_data.fetch(m) do
+        @raw_data[m.to_s]
+      end
     end
   end
 
   def []=(k, v)
-    @raw_data[k.to_s] = v
+    @raw_data[k] = v
   end
 
   def valid?
