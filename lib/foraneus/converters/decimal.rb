@@ -9,9 +9,10 @@ class Foraneus
 
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
 
-      def initialize(delimiter = DEFAULT_DELIMITER, separator = DEFAULT_SEPARATOR)
-        @delimiter = delimiter
-        @separator = separator
+      def initialize(opts = {})
+        @delimiter = opts[:delimiter] || DEFAULT_DELIMITER
+        @separator = opts[:separator] || DEFAULT_SEPARATOR
+        @precision = opts[:precision]
       end
 
       def parse(s)
@@ -24,6 +25,10 @@ class Foraneus
       end
 
       def raw(v)
+        if @precision
+          v = v.round(@precision)
+        end
+
         left, right = v.to_s('F').split('.')
 
         left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }

@@ -7,8 +7,8 @@ class Foraneus
 
       DEFAULT_FORMAT = '%Y-%m-%d'
 
-      def initialize(format = DEFAULT_FORMAT)
-        @format = format
+      def initialize(opts = {})
+        @format = opts[:format] || DEFAULT_FORMAT
       end
 
       def parse(s)

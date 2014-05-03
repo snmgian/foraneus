@@ -20,7 +20,9 @@ describe Foraneus::Converters::Decimal do
     end
 
     context 'when separator and delimiter are given' do
-      subject(:converter) { Foraneus::Converters::Decimal.new('.', ',') }
+      subject(:converter) {
+        Foraneus::Converters::Decimal.new(:delimiter => '.', :separator => ',')
+      }
 
       it 'parses a decimal representation' do
         s = '1.234.567,89'
@@ -48,7 +50,9 @@ describe Foraneus::Converters::Decimal do
     end
 
     context 'when separator and delimiter are given' do
-      subject(:converter) { Foraneus::Converters::Decimal.new('.', ',') }
+      subject(:converter) {
+        Foraneus::Converters::Decimal.new(:delimiter => '.', :separator => ',')
+      }
 
       it 'returns a decimal representation' do
         s = '1.234.567,89'

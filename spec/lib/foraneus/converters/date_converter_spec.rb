@@ -17,7 +17,9 @@ describe Foraneus::Converters::Date do
     end
 
     context 'when format is given' do
-      subject(:converter) { Foraneus::Converters::Date.new('%d/%m/%Y') }
+      subject(:converter) {
+        Foraneus::Converters::Date.new(:format => '%d/%m/%Y')
+      }
 
       it 'parses a date representation' do
         s = '13/04/2012'
@@ -42,7 +44,9 @@ describe Foraneus::Converters::Date do
 
     context 'when format is given' do
       let(:format) { '%m/%d/%Y' }
-      subject(:converter) { Foraneus::Converters::Date.new(format) }
+      subject(:converter) {
+        Foraneus::Converters::Date.new(:format => format)
+      }
 
       it 'returns a date representation' do
         s = d.strftime(format)
