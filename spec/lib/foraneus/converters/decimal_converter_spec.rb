@@ -60,6 +60,22 @@ describe Foraneus::Converters::Decimal do
         converter.raw(n).should eq(s)
       end
     end
+
+    context 'when precision is given' do
+      subject(:converter) {
+        Foraneus::Converters::Decimal.new(:precision => 2)
+      }
+
+      it 'x' do
+        n = BigDecimal.new('3.1')
+        converter.raw(n).should eq('3.10')
+      end
+
+      it 'y' do
+        n = BigDecimal.new('3.145')
+        converter.raw(n).should eq('3.145')
+      end
+    end
   end
 
 end

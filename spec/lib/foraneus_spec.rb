@@ -16,6 +16,10 @@ describe Foraneus do
     its(:delay) { should be_nil }
 
     its([:delay]) { should be_nil }
+
+    its(:data) { should be_empty }
+
+    its([]) { should be_empty }
   end
 
   describe '.parse' do

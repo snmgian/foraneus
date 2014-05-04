@@ -25,16 +25,24 @@ class Foraneus
       end
 
       def raw(v)
-        if @precision
-          v = v.round(@precision)
-        end
-
         left, right = v.to_s('F').split('.')
+
+        if @precision && right.length < @precision
+          right = add_trailing_zeros(right, @precision - right.length)
+        end
 
         left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }
 
         "#{left}#{@separator}#{right}"
       end
+
+      private
+      def add_trailing_zeros(s, n)
+        zeros = '0' * n
+
+        "#{s}#{zeros}"
+      end
+
     end
 
   end
