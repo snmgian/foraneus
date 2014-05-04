@@ -2,31 +2,84 @@
 
 ## Usage
 
-class X < Foraneus
-  integer :delay
-  float :duration
-end
+ - Declaration:
+  ``` ruby
+  class MyForm < Foraneus
+    integer :delay
+    float :duration
+  end
+  ```
 
--- from the outside (#create, #update)
-x = X.convert(:delay => '5', :duration => '2.14')
-x.valid? # true
-x.errors # {}
+ - From the outside:
 
-x.delay # 5
-x[:delay] # '5'
+  ``` ruby
+  form = MyForm.parse(:delay => '5', :duration => '2.14')
+  ```
 
--- from the inside (#new)
-x = X.new
+  ``` ruby
+  form.delay    # => 5
+  form[:delay]  # => '5'
+  ```
 
-x[:delay] # nil
+  ``` ruby
+  form.data   # => { :delay => 5, :duration => 2.14 }
+  form[]      # => { :delay => '5', :duration => '2.14' }
+  ```
 
--- from the inside (#edit)
-x = X.raw(:delay => 5, :duration => 2.14)
-x.delay # 5
-x[:delay] # '5'
+  ``` ruby
+  form.valid?   # => true
+  form.errors   # => {}
+  ```
 
-== .
-Copyright (c) 2012 "snmgian", released under LGPL v3 license.
+ - From the inside:
 
-== .
-Contact at: snmgian at gmail dot com
+  ``` ruby
+  form = MyForm.new
+  ```
+
+  ``` ruby
+  form.delay    # => nil
+  form[:delay]  # => nil
+  ```
+
+ - From the inside:
+
+  ``` ruby
+  form = MyForm.raw(:delay => 5, :duration => 2.14)
+  ```
+
+  ``` ruby
+  form.delay    # => 5
+  form[:delay]  # => '5'
+  ```
+
+  ``` ruby
+  form.data   # => { :delay => 5, :duration => 2.14 }
+  form[]      # => { :delay => '5', :duration => '2.14' }
+  ```
+
+## Installation
+
+ - Install `foraneus` as a gem.
+
+    ``` shell
+    gem install foraneus
+    ```
+
+## Running tests
+
+Tests are written in RSpec. To run them all just execute the following from your command line:
+
+  ``` shell
+  rspec
+  ```
+
+## Badges
+
+[![Build Status](https://travis-ci.org/snmgian/foraneus.svg?branch=master)](https://travis-ci.org/snmgian/foraneus) [![Code Climate](https://codeclimate.com/github/snmgian/foraneus.png)](https://codeclimate.com/github/snmgian/foraneus)
+
+## License
+
+This software is licensed under the [LGPL][lgpl] license.
+
+[lgpl]: https://www.gnu.org/licenses/lgpl.html

@@ -1,6 +1,1 @@
-.*
-*.log
-coverage/
-
-!.gitignore
-!.gemspec
+Gemfile.lock
