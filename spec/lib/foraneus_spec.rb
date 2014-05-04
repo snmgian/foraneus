@@ -49,6 +49,18 @@ describe Foraneus do
 
         its([]) { should include('delay' => '5') }
       end
+
+      context 'with nil values' do
+        subject(:form) { form_spec.parse('delay' => nil) }
+
+        its(['delay']) { should eq(nil) }
+
+        its([:delay]) { should eq(nil) }
+
+        its(:data) { should include('delay' => nil) }
+
+        its([]) { should include('delay' => nil) }
+      end
     end
 
     context 'with non parseable data' do
@@ -107,6 +119,18 @@ describe Foraneus do
       its([:delay]) { should eq('5') }
 
       its([]) { should include('delay' => '5') }
+    end
+
+    context 'with nil values' do
+      subject(:form) { form_spec.raw('delay' => nil) }
+
+      its(:data) { should include('delay' => nil) }
+
+      its(['delay']) { should eq(nil) }
+
+      its([:delay]) { should eq(nil) }
+
+      its([]) { should include('delay' => nil) }
     end
   end
 end

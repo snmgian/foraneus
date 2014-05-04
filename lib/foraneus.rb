@@ -72,7 +72,12 @@ class Foraneus
 
       instance[k] = v
       begin
-        v = converter.parse(v)
+        v = if v.nil?
+          nil
+        else
+          converter.parse(v)
+        end
+
         instance.send("#{field}=", v)
         instance.data[k] = v
       rescue
@@ -91,7 +96,13 @@ class Foraneus
       next unless fields.has_key?(k.to_s)
       instance.send("#{k}=", v)
       converter = fields[k.to_s]
-      s = converter.raw(v)
+
+      s = if v.nil?
+        nil
+      else
+        converter.raw(v)
+      end
+
       instance[k] = s
       instance.data[k] = v
     end
