@@ -37,6 +37,19 @@ describe Foraneus::Converters::Integer do
       end
     end
 
+    context 'when delimiter is given' do
+      subject(:converter) {
+        Foraneus::Converters::Integer.new(:delimiter => '.')
+      }
+
+      it 'parses an integer representation' do
+        s = '1.234.567'
+        n = 1_234_567
+
+        converter.parse(s).should eq(n)
+      end
+    end
+
     context 'with invalid values' do
       let(:raw_invalid) { 'INVALID' }
 
@@ -68,6 +81,20 @@ describe Foraneus::Converters::Integer do
     it 'returns a string representation' do
       subject.raw(2).should eq('2')
     end
+
+    context 'when delimiter is given' do
+      subject(:converter) {
+        Foraneus::Converters::Integer.new(:delimiter => '.')
+      }
+
+      it 'parses an integer representation' do
+        n = 1_234_567
+        s = '1.234.567'
+
+        converter.raw(n).should eq(s)
+      end
+    end
+
   end
 
 end
