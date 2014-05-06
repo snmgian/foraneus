@@ -3,6 +3,7 @@ require_relative 'foraneus/converters/date'
 require_relative 'foraneus/converters/decimal'
 require_relative 'foraneus/converters/float'
 require_relative 'foraneus/converters/integer'
+require_relative 'foraneus/converters/noop'
 require_relative 'foraneus/converters/string'
 require_relative 'foraneus/errors'
 
@@ -43,6 +44,11 @@ class Foraneus
 
   def self.integer(name)
     converter = Foraneus::Converters::Integer.new
+    field(name, converter)
+  end
+
+  def self.noop(name)
+    converter = Foraneus::Converters::Noop.new
     field(name, converter)
   end
 
