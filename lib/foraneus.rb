@@ -66,28 +66,35 @@ class Foraneus
     parsed_data = {}
 
     raw_data.each do |k, v|
-      field = k.to_s
-      converter = fields[field]
-      next unless converter
-
-      instance[k] = v
-      begin
-        v = if v.nil?
-          nil
-        else
-          converter.parse(v)
-        end
-
-        instance.send("#{field}=", v)
-        instance.data[k] = v
-      rescue
-        error = Foraneus::Error.new($!.class.name, $!.message)
-        instance.instance_variable_get(:@errors)[k] = error
-      end
+      __parse_raw_datum(instance, k, v)
     end
 
     instance
   end
+
+  # @param [Foraneus] foraneus
+  # @param [String, Symbol] k
+  # @param [String] v
+  def self.__parse_raw_datum(foraneus, k, v)
+    field = k.to_s
+    converter = fields[field]
+
+    return unless converter
+
+    foraneus[k] = v
+
+    unless v.nil?
+      v = converter.parse(v)
+    end
+
+    foraneus.send("#{field}=", v)
+    foraneus.data[k] = v
+
+  rescue
+    error = Foraneus::Error.new($!.class.name, $!.message)
+    foraneus.instance_variable_get(:@errors)[k] = error
+  end
+  private_class_method :__parse_raw_datum
 
   def self.raw(data)
     instance = self.new
