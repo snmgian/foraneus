@@ -37,6 +37,26 @@ describe Foraneus::Converters::Float do
       end
     end
 
+    context 'when separator and delimiter are given' do
+      subject(:converter) {
+        Foraneus::Converters::Float.new(:delimiter => '.', :separator => ',')
+      }
+
+      it 'parses a float representation' do
+        s = '1.234.567,89'
+        n = 1_234_567.89
+
+        converter.parse(s).should eq(n)
+      end
+
+      it 'parses a float representation when no integer part' do
+        s = ',56'
+        n = 0.56
+
+        converter.parse(s).should eq(n)
+      end
+    end
+
     context 'with invalid values' do
       let(:raw_invalid) { 'INVALID' }
 
@@ -68,5 +88,40 @@ describe Foraneus::Converters::Float do
     it 'returns a string representation' do
       subject.raw(2.34).should eq('2.34')
     end
+
+    context 'when separator and delimiter are given' do
+      subject(:converter) {
+        Foraneus::Converters::Float.new(:delimiter => '.', :separator => ',')
+      }
+
+      it 'returns a float representation' do
+        n = 1_234_567.89
+        s = '1.234.567,89'
+
+        converter.raw(n).should eq(s)
+      end
+    end
+
+    context 'when precision is given' do
+      subject(:converter) {
+        Foraneus::Converters::Float.new(:precision => 2)
+      }
+
+      it 'fills with zeros when value precision is smaller than converter precision' do
+        n = 3.1
+        converter.raw(n).should eq('3.10')
+      end
+
+      it 'does not affect the representation when precision and converter precision are both equal' do
+        n = 3.14
+        converter.raw(n).should eq('3.14')
+      end
+
+      it 'does not truncate the representation when precision is larger than converter precision' do
+        n = 3.145
+        converter.raw(n).should eq('3.145')
+      end
+    end
+
   end
 end

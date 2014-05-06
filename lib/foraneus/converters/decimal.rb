@@ -42,7 +42,6 @@ class Foraneus
 
         "#{s}#{zeros}"
       end
-
     end
 
   end

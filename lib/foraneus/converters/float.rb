@@ -2,12 +2,54 @@ class Foraneus
   module Converters
 
     class Float
+
+      DEFAULT_SEPARATOR = '.'
+
+      DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
+
+      def initialize(opts = {})
+        @delimiter = opts[:delimiter]
+        @precision = opts[:precision]
+        @separator = opts[:separator] || DEFAULT_SEPARATOR
+      end
+
       def parse(s)
-        Kernel.Float(s)
+        if s == ''
+          raise ArgumentError, 'invalid value for Float(): ""'
+        end
+
+        parts = s.split(@separator)
+
+        integer_part = parts[0] || '0'
+
+        if @delimiter
+          integer_part.gsub!(@delimiter, '')
+        end
+
+        fractional_part = parts[1] || '0'
+
+        Kernel.Float("#{integer_part}.#{fractional_part}")
       end
 
       def raw(v)
-        v.to_s
+        left, right = v.to_s.split('.')
+
+        if @precision && right.length < @precision
+          right = add_trailing_zeros(right, @precision - right.length)
+        end
+
+        if @delimiter
+          left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }
+        end
+
+        "#{left}#{@separator}#{right}"
+      end
+
+      private
+      def add_trailing_zeros(s, n)
+        zeros = '0' * n
+
+        "#{s}#{zeros}"
       end
     end
 

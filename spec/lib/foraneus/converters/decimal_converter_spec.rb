@@ -66,12 +66,17 @@ describe Foraneus::Converters::Decimal do
         Foraneus::Converters::Decimal.new(:precision => 2)
       }
 
-      it 'x' do
+      it 'fills with zeros when value precision is smaller than converter precision' do
         n = BigDecimal.new('3.1')
         converter.raw(n).should eq('3.10')
       end
 
-      it 'y' do
+      it 'does not affect the representation when precision and converter precision are both equal' do
+        n = BigDecimal.new('3.14')
+        converter.raw(n).should eq('3.14')
+      end
+
+      it 'does not truncate the representation when precision is larger than converter precision' do
         n = BigDecimal.new('3.145')
         converter.raw(n).should eq('3.145')
       end
