@@ -57,7 +57,9 @@ class Foraneus
     field(name, converter)
   end
 
-  def self.field(name, converter)
+  def self.field(name, converter = nil)
+    converter ||= Foraneus::Converters::Noop.new
+
     fields[name.to_s] = converter
     self.send(:attr_accessor, name)
   end
