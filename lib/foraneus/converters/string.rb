@@ -3,11 +3,11 @@ class Foraneus
 
     class String
       def parse(s)
-        s
+        s.to_s
       end
 
       def raw(v)
-        v
+        v.to_s
       end
     end
 
