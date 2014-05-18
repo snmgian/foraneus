@@ -1,8 +1,17 @@
 # Foraneus
 
-## Usage
+Foraneus allows to:
+ - parse data coming from external sources (like an HTTP request).
+ - convert data back to a raw representation suitable for being used at the outside, like an HTML
+form.
+
+No matter which source of data is fed into Foraneus (external or internal), any instance can return
+raw and parsed data.
+
+## Basic usage
 
  - Declaration:
+
   ``` ruby
   class MyForm < Foraneus
     integer :delay
@@ -26,22 +35,6 @@
   form[]      # => { :delay => '5', :duration => '2.14' }
   ```
 
-  ``` ruby
-  form.valid?   # => true
-  form.errors   # => {}
-  ```
-
- - From the inside:
-
-  ``` ruby
-  form = MyForm.new
-  ```
-
-  ``` ruby
-  form.delay    # => nil
-  form[:delay]  # => nil
-  ```
-
  - From the inside:
 
   ``` ruby
@@ -57,6 +50,96 @@
   form.data   # => { :delay => 5, :duration => 2.14 }
   form[]      # => { :delay => '5', :duration => '2.14' }
   ```
+
+ - When no data:
+
+  ``` ruby
+  form = MyForm.new
+  ```
+
+  ``` ruby
+  form.delay    # => nil
+  form[:delay]  # => nil
+  ```
+
+## Declaration
+
+Declare source classes by inheriting from `Foraneus` base class.
+
+  ``` ruby
+  class MyForm < Foraneus
+    field :delay, SomeCustomConverter.new
+    float :duration
+  end
+  ```
+
+Fields are declared in two ways:
+
+ - calling `.field`
+ - calling a shortcut method, like `.float`
+
+
+There are handy methods for any of the built-in converters: boolean, date, decimal, float, integer,
+noop, and string.
+
+When no converter is passed to `.field`, Foraneus::Converters::Noop is assigned to the declared
+field.
+
+## Converters
+
+Converters have two interrelated responsibilities:
+
+ - Parse data, like the string `"3,000"`, into an object, `like 3_000`.
+ - Serialize data, like integer `3_000`, into string `"3,000"`
+
+A converter is simply an object that responds to `#parse(s)` and `#raw(v)` methods.
+
+When `#parse(s)` raises a StandardError exception, or any of its descendants, the exception is
+rescued and a Foraneus::Error instance is added to `Foraneus#errors` map.
+
+Built-in converters:
+
+ - Boolean
+ - Date
+ - Decimal
+ - Float
+ - Integer
+ - Noop
+ - String
+
+## Validations
+
+Foraneus only validates that external data can be converted to the specified types. Smart
+validations, like date range inclusion, are out of the scope of this gem.
+
+`#valid?` and `#errors` are handy methods that tell whether a Foraneus instance is valid or not.
+
+Valid instance:
+
+  ``` ruby
+  form.valid?     # => true
+  form[:errors]   # => {}
+  ```
+
+Invalid one:
+  ``` ruby
+  form = MyForm.parse(:delay => 'INVALID')
+
+  form.valid?                     # => false
+
+  form[:errors][:delay].key       # => 'ArgumentError'
+  form[:errors][:delay].message   # => 'invalid value for Integer(): "INVALID"'
+  ```
+
+`#errors` is a map in which keys correspond to field names, and values are instances of
+`Foraneus::Error`.
+
+The name of the exception raised by `#parse` is to the error's `key` attribute, and the exception's
+message is added to the error's `message` attribute.
+
+
+Data coming from the inside is assumed to be valid, so `.raw` won't return an instance having
+errors neither being invalid.
 
 ## Installation
 
