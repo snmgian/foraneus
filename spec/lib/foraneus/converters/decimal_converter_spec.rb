@@ -6,7 +6,7 @@ describe Foraneus::Converters::Decimal do
 
   describe '#parse' do
     it 'parses a decimal representation' do
-      s = '1,234.56'
+      s = '1234.56'
       n = BigDecimal.new('1234.56')
 
       converter.parse(s).should eq(n)

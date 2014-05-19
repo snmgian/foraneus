@@ -4,7 +4,7 @@ describe Foraneus::Converters::Integer do
 
   describe '#parse' do
     context 'with valid values' do
-      let(:number) { 2 }
+      let(:number) { 1234 }
       let(:raw_number) { number.to_s }
 
       it 'returns an integer number' do

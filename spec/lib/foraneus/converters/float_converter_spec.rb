@@ -4,7 +4,7 @@ describe Foraneus::Converters::Float do
 
   describe '#parse' do
     context 'with valid values' do
-      let(:number) { 2.3412 }
+      let(:number) { 1234.5678 }
       let(:raw_number) { number.to_s }
 
       it 'returns a float number' do
