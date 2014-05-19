@@ -15,11 +15,13 @@ class Foraneus
 
   attr_accessor :data
 
-  def initialize
+  def initialize(data = {})
     @data = {}
     @raw_data = {}
 
     @errors = {}
+
+    self.class.send(:__raw, self, data)
   end
 
   def self.boolean(name)
@@ -107,6 +109,10 @@ class Foraneus
   def self.raw(data)
     instance = self.new
 
+    __raw(instance, data)
+  end
+
+  def self.__raw(instance, data)
     data.each do |k, v|
       next unless fields.has_key?(k.to_s)
       instance.send("#{k}=", v)
@@ -124,6 +130,7 @@ class Foraneus
 
     instance
   end
+  private_class_method :__raw
 
   def [](m = nil)
     if m == :errors
