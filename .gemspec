@@ -5,8 +5,8 @@ Gem::Specification.new do |s|
   s.authors         = ['Gianfranco Zas']
   s.email           = 'snmgian@gmail.com'
   s.homepage        = 'https://github.com/snmgian/foraneus'
-  s.summary         = 'Validates and transform external data.'
-  s.description     = 'Provides validation and transformation mechanisms to external data.'
+  s.summary         = 'Transforms external data.'
+  s.description     = 'Provides two way transformation mechanisms to external data.'
   s.licenses        = ['LGPL']
 
   s.files           = Dir.glob("{lib}/**/*") + %w(COPYING COPYING.LESSER README.md)
