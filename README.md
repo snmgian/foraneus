@@ -51,17 +51,6 @@ raw and parsed data.
   form[]      # => { :delay => '5', :duration => '2.14' }
   ```
 
- - When no data:
-
-  ``` ruby
-  form = MyForm.new
-  ```
-
-  ``` ruby
-  form.delay    # => nil
-  form[:delay]  # => nil
-  ```
-
 ## Declaration
 
 Declare source classes by inheriting from `Foraneus` base class.

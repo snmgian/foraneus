@@ -10,28 +10,6 @@ describe Foraneus do
     end
   }
 
-  describe '.new' do
-    subject(:form) { form_spec.new }
-
-    its(:delay) { should be_nil }
-
-    its([:delay]) { should be_nil }
-
-    its(:data) { should be_empty }
-
-    its([]) { should be_empty }
-
-    context 'when initial data' do
-      subject(:form) { form_spec.new(:delay => 5) }
-
-      its(:delay)     { should eq(5) }
-      its([:delay])   { should eq('5') }
-
-      its(:data)    { should include(:delay => 5) }
-      its([])  { should include(:delay => '5') }
-    end
-  end
-
   describe '.parse' do
     context 'with parseable data' do
       subject(:form) { form_spec.parse(:delay => '5') }
