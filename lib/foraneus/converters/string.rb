@@ -2,6 +2,8 @@ class Foraneus
   module Converters
 
     class String
+
+      # @return [String]
       def parse(s)
         s.to_s
       end

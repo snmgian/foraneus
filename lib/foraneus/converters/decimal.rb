@@ -9,12 +9,17 @@ class Foraneus
 
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
 
+      # @param [Hash] opts
+      # @option opts [String] delimiter Thousands delimiter.
+      # @option opts [String] separator Decimal separator.
+      # @option opts [Integer] precision Minimum precision.
       def initialize(opts = {})
         @delimiter = opts[:delimiter] || DEFAULT_DELIMITER
         @separator = opts[:separator] || DEFAULT_SEPARATOR
         @precision = opts[:precision]
       end
 
+      # @return [BigDecimal]
       def parse(s)
         parts = s.split(@separator)
 

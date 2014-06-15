@@ -7,12 +7,17 @@ class Foraneus
 
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
 
+      # @param [Hash] opts
+      # @option opts [String] delimiter Thousands delimiter.
+      # @option opts [String] separator Decimal separator.
+      # @option opts [Integer] precision Minimum precision.
       def initialize(opts = {})
         @delimiter = opts[:delimiter]
         @precision = opts[:precision]
         @separator = opts[:separator] || DEFAULT_SEPARATOR
       end
 
+      # @return [Float]
       def parse(s)
         if s == ''
           raise ArgumentError, 'invalid value for Float(): ""'

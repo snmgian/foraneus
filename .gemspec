@@ -12,5 +12,7 @@ Gem::Specification.new do |s|
   s.files           = Dir.glob("{lib}/**/*") + %w(COPYING COPYING.LESSER README.md)
   s.test_files      = Dir.glob("{spec}/**/*")
 
-  s.add_development_dependency('rspec')
+  s.add_development_dependency('rspec', '~> 2.14.0')
+  s.add_development_dependency('redcarpet')
+  s.add_development_dependency('yard')
 end

@@ -74,6 +74,16 @@ noop, and string.
 When no converter is passed to `.field`, Foraneus::Converters::Noop is assigned to the declared
 field.
 
+## Instantiation
+
+Foraneus instances can be obtained by calling two methods: `parse` and `raw`.
+
+Use `.parse` when:
+ - data is coming from outside of the system, like an HTTP request.
+
+Use `.raw` when:
+ - data is coming from the inside of the system, like a business layer.
+
 ## Converters
 
 Converters have two interrelated responsibilities:
@@ -111,6 +121,7 @@ Valid instance:
   ```
 
 Invalid one:
+
   ``` ruby
   form = MyForm.parse(:delay => 'INVALID')
 
@@ -123,9 +134,8 @@ Invalid one:
 `#errors` is a map in which keys correspond to field names, and values are instances of
 `Foraneus::Error`.
 
-The name of the exception raised by `#parse` is to the error's `key` attribute, and the exception's
+The name of the exception raised by `#parse` is the error's `key` attribute, and the exception's
 message is added to the error's `message` attribute.
-
 
 Data coming from the inside is assumed to be valid, so `.raw` won't return an instance having
 errors neither being invalid.
@@ -145,6 +155,16 @@ Tests are written in RSpec. To run them all just execute the following from your
   ``` shell
   rspec
   ```
+
+## Code documentation
+
+Documentation is written in Yard. To see it in a browser, execute this command:
+
+  ``` shell
+  yard server --reload
+  ```
+
+Then point the browser to `http://localhost:8808/`.
 
 ## Badges
 

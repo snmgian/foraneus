@@ -4,10 +4,13 @@ class Foraneus
     class Integer
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
 
+      # @param [Hash] opts
+      # @option opts [String] delimiter Thousands delimiter.
       def initialize(opts = {})
         @delimiter = opts[:delimiter]
       end
 
+      # @return [Integer]
       def parse(s)
         s = s.gsub(@delimiter, '') if @delimiter
 
