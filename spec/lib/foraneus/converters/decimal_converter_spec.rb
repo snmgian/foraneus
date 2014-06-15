@@ -44,7 +44,7 @@ describe Foraneus::Converters::Decimal do
     let(:n) { BigDecimal.new('1234567.89') }
 
     it 'returns a decimal representation' do
-      s = '1,234,567.89'
+      s = '1234567.89'
 
       converter.raw(n).should eq(s)
     end

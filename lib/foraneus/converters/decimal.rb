@@ -4,7 +4,6 @@ class Foraneus
   module Converters
 
     class Decimal
-      DEFAULT_DELIMITER = ','
       DEFAULT_SEPARATOR = '.'
 
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
@@ -14,16 +13,21 @@ class Foraneus
       # @option opts [String] separator Decimal separator.
       # @option opts [Integer] precision Minimum precision.
       def initialize(opts = {})
-        @delimiter = opts[:delimiter] || DEFAULT_DELIMITER
-        @separator = opts[:separator] || DEFAULT_SEPARATOR
+        @delimiter = opts[:delimiter]
         @precision = opts[:precision]
+        @separator = opts[:separator] || DEFAULT_SEPARATOR
       end
 
       # @return [BigDecimal]
       def parse(s)
         parts = s.split(@separator)
 
-        integer_part = (parts[0] || '0').gsub(@delimiter, '')
+        integer_part = (parts[0] || '0')
+
+        if @delimiter
+          integer_part.gsub!(@delimiter, '')
+        end
+
         fractional_part = parts[1] || '0'
 
         BigDecimal.new("#{integer_part}.#{fractional_part}")
@@ -36,7 +40,9 @@ class Foraneus
           right = add_trailing_zeros(right, @precision - right.length)
         end
 
-        left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }
+        if @delimiter
+          left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }
+        end
 
         "#{left}#{@separator}#{right}"
       end
