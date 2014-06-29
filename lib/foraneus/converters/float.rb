@@ -23,10 +23,6 @@ class Foraneus
 
       # @return [Float]
       def parse(s)
-        if s == ''
-          raise ArgumentError, 'invalid value for Float(): ""'
-        end
-
         parts = s.split(@separator)
 
         integer_part = parts[0] || '0'

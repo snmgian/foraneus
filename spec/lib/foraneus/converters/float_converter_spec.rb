@@ -66,22 +66,6 @@ describe Foraneus::Converters::Float do
         }.to raise_error
       end
     end
-
-    context 'with empty values' do
-      it 'raises an error' do
-        expect {
-          subject.parse('')
-        }.to raise_error
-      end
-    end
-
-    context 'with nil values' do
-      it 'raises an error' do
-        expect {
-          subject.parse(nil)
-        }.to raise_error
-      end
-    end
   end
 
   describe '#raw' do
