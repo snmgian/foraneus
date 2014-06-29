@@ -18,6 +18,8 @@ describe Foraneus do
 
       its([:delay]) { should eq('5') }
 
+      its(['delay']) { should be_nil }
+
       its(:data) { should include(:delay => 5) }
 
       its([]) { should include(:delay => '5') }
