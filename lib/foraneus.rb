@@ -186,9 +186,9 @@ class Foraneus
     field = k.to_s
     converter = fields[field]
 
-    return unless converter
-
     foraneus[k] = v
+
+    return unless converter
 
     if (v.nil? || v == '') && converter.opts[:required]
       raise KeyError, "required parameter not found: #{field.inspect}"

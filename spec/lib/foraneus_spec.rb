@@ -16,11 +16,11 @@ describe Foraneus do
 
       its(:delay) { should eq(5) }
 
+      its(:data) { should include(:delay => 5) }
+
       its([:delay]) { should eq('5') }
 
       its(['delay']) { should be_nil }
-
-      its(:data) { should include(:delay => 5) }
 
       its([]) { should include(:delay => '5') }
 
@@ -69,6 +69,24 @@ describe Foraneus do
 
         its(:message) { should eq(converter_exception.message) }
       end
+    end
+
+    context 'with unexpected data' do
+      subject(:form) { form_spec.parse(:position => 'north') }
+
+      it 'does not have a getter for the received param' do
+        expect {
+          form.position
+        }.to raise_error(NoMethodError)
+      end
+
+      its(:data) { should_not include(:position) }
+
+      its([:position]) { should eq('north') }
+
+      its([]) { should include(:position => 'north') }
+
+      it { should be_valid }
     end
 
     shared_examples 'an absent parameters handler' do |missing_value|
