@@ -7,9 +7,12 @@ class Foraneus
 
       DEFAULT_FORMAT = '%Y-%m-%d'
 
+      attr_reader :opts
+
       # @param [Hash] opts
       # @option opts [String] format Date format.
       def initialize(opts = {})
+        @opts = opts
         @format = opts[:format] || DEFAULT_FORMAT
       end
 

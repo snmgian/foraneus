@@ -4,9 +4,12 @@ class Foraneus
     class Integer
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
 
+      attr_reader :opts
+
       # @param [Hash] opts
       # @option opts [String] delimiter Thousands delimiter.
       def initialize(opts = {})
+        @opts = opts
         @delimiter = opts[:delimiter]
       end
 

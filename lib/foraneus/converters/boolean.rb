@@ -8,6 +8,12 @@ class Foraneus
     # When converting to a raw value, a true value => 'true', a false value => 'false'.
     class Boolean
 
+      attr_reader :opts
+
+      def initialize(opts = {})
+        @opts = opts
+      end
+
       # @return [Boolean]
       def parse(s)
         if s == 'true'

@@ -190,7 +190,11 @@ class Foraneus
 
     foraneus[k] = v
 
-    unless v.nil?
+    if (v.nil? || v == '') && converter.opts[:required]
+      raise KeyError, "required parameter not found: #{field.inspect}"
+    elsif v.nil? || v == ''
+      v = nil
+    else
       v = converter.parse(v)
     end
 

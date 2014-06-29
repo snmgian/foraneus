@@ -91,10 +91,12 @@ Converters have two interrelated responsibilities:
  - Parse data, like the string `"3,000"`, into an object, `like 3_000`.
  - Serialize data, like integer `3_000`, into string `"3,000"`
 
-A converter is simply an object that responds to `#parse(s)` and `#raw(v)` methods.
+A converter is simply an object that responds to `#parse(s)`, `#raw(v)`, and `#opts` methods.
 
 When `#parse(s)` raises a StandardError exception, or any of its descendants, the exception is
 rescued and a Foraneus::Error instance is added to `Foraneus#errors` map.
+
+`#opts` should return the opts hash used to instantiate the converter.
 
 Built-in converters:
 

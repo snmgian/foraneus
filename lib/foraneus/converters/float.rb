@@ -7,11 +7,15 @@ class Foraneus
 
       DELIMITED_REGEX = /(\d)(?=(\d\d\d)+(?!\d))/
 
+      attr_reader :opts
+
       # @param [Hash] opts
       # @option opts [String] delimiter Thousands delimiter.
       # @option opts [String] separator Decimal separator.
       # @option opts [Integer] precision Minimum precision.
       def initialize(opts = {})
+        @opts = opts
+
         @delimiter = opts[:delimiter]
         @precision = opts[:precision]
         @separator = opts[:separator] || DEFAULT_SEPARATOR
