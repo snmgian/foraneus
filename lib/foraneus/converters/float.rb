@@ -23,6 +23,44 @@ class Foraneus
 
       # @return [Float]
       def parse(s)
+        integer_part, fractional_part = split(s)
+
+        Kernel.Float("#{integer_part}.#{fractional_part}")
+      end
+
+      def raw(v)
+        left, right = v.to_s.split('.')
+
+        join(left, right)
+      end
+
+      protected
+      # Joins both integer and fractional parts.
+      #
+      # It adds trailing zeros according to the current precision.
+      #
+      # @param [Integer] left Integer part
+      # @param [Integer] right Fractional part
+      #
+      # @return [String]
+      def join(left, right)
+        if @precision && right.length < @precision
+          right = add_trailing_zeros(right, @precision - right.length)
+        end
+
+        if @delimiter
+          left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }
+        end
+
+        "#{left}#{@separator}#{right}"
+      end
+
+      # Splits a float representation into its integer and fractional parts.
+      #
+      # @param [String] s
+      #
+      # @return [Array [integer_part, fractional_part] ]
+      def split(s)
         parts = s.split(@separator)
 
         integer_part = parts[0] || '0'
@@ -33,21 +71,7 @@ class Foraneus
 
         fractional_part = parts[1] || '0'
 
-        Kernel.Float("#{integer_part}.#{fractional_part}")
-      end
-
-      def raw(v)
-        left, right = v.to_s.split('.')
-
-        if @precision && right.length < @precision
-          right = add_trailing_zeros(right, @precision - right.length)
-        end
-
-        if @delimiter
-          left.gsub!(DELIMITED_REGEX) { "#{$1}#{@delimiter}" }
-        end
-
-        "#{left}#{@separator}#{right}"
+        [integer_part, fractional_part]
       end
 
       private
