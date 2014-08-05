@@ -39,6 +39,18 @@ describe Foraneus do
 
         its([]) { should include('delay' => '5') }
       end
+
+      context 'when empty strings' do
+        let(:converter) { Foraneus::Converters::String.new }
+
+        subject(:form) { form_spec.parse(:delay => '') }
+
+        its(:delay) { should eq(nil) }
+
+        its(:data) { should include(:delay => nil) }
+
+        it { should be_valid }
+      end
     end
 
     context 'with non parseable data' do
@@ -87,6 +99,30 @@ describe Foraneus do
       its([]) { should include(:position => 'north') }
 
       it { should be_valid }
+    end
+
+    context 'when a field is declared as allow blanks = true' do
+      let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => true) }
+
+      subject(:form) { form_spec.parse(:delay => '') }
+
+      its(:delay) { should be_nil }
+
+      its(:data) { should include(:delay => nil) }
+
+      its([:delay]) { should eq('') }
+
+      its([]) { should include(:delay => '') }
+    end
+
+    context 'when a field is declared as blanks_as_nil = false' do
+      let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => false) }
+
+      subject(:form) { form_spec.parse(:delay => '') }
+
+      its(:delay) { should eq('') }
+
+      its(:data) { should include(:delay => '') }
     end
 
     shared_examples 'an absent parameters handler' do |missing_value|

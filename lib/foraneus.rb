@@ -190,9 +190,13 @@ class Foraneus
 
     return unless converter
 
-    if (v.nil? || v == '') && converter.opts[:required]
+    if v == '' && converter.opts.fetch(:blanks_as_nil, true)
+      v = nil
+    end
+
+    if v.nil? && converter.opts[:required]
       raise KeyError, "required parameter not found: #{field.inspect}"
-    elsif v.nil? || v == ''
+    elsif v.nil?
       v = nil
     else
       v = converter.parse(v)
