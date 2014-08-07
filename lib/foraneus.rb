@@ -110,8 +110,23 @@ class Foraneus
   def self.parse(raw_data)
     instance = self.new
 
+    parsed_keys = []
+
+    @fields.each do |k, _|
+      given_key = k
+      v = raw_data.fetch(given_key) do |k|
+        given_key = k.to_sym
+        raw_data.fetch(given_key, nil)
+      end
+
+      parsed_keys << given_key
+      __parse_raw_datum(instance, given_key, v)
+    end
+
     raw_data.each do |k, v|
-      __parse_raw_datum(instance, k, v)
+      unless parsed_keys.include?(k)
+        __parse_raw_datum(instance, k, v)
+      end
     end
 
     instance

@@ -18,13 +18,6 @@ class Foraneus
 
         join(left, right)
       end
-
-      private
-      def add_trailing_zeros(s, n)
-        zeros = '0' * n
-
-        "#{s}#{zeros}"
-      end
     end
 
   end

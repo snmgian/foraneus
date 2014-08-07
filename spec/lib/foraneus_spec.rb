@@ -125,7 +125,7 @@ describe Foraneus do
       its(:data) { should include(:delay => '') }
     end
 
-    shared_examples 'an absent parameters handler' do |missing_value|
+    shared_examples 'an absent parameters value handler' do |missing_value|
       subject(:form) { form_spec.parse(:delay => missing_value) }
 
       it { should be_valid }
@@ -162,11 +162,23 @@ describe Foraneus do
     end
 
     context 'with nil values' do
-      it_behaves_like 'an absent parameters handler', nil
+      it_behaves_like 'an absent parameters value handler', nil
     end
 
     context 'with empty values' do
-      it_behaves_like 'an absent parameters handler', ''
+      it_behaves_like 'an absent parameters value handler', ''
+    end
+
+    context 'when required field' do
+      let(:converter) { Foraneus::Converters::Integer.new(:required => true) }
+
+      context 'when missing input parameter' do
+        subject(:form) { form_spec.parse({}) }
+
+        it { should_not be_valid }
+
+        its(:delay) { should be_nil }
+      end
     end
   end
 
