@@ -107,7 +107,7 @@ class Foraneus
   # @param [Hash<Symbol, String>] raw_data
   #
   # @return [Foraneus] An instance of a form.
-  def self.parse(raw_data)
+  def self.parse(raw_data = {})
     instance = self.new
 
     parsed_keys = []
@@ -137,7 +137,7 @@ class Foraneus
   # @param [Hash<Symbol, Object>] data
   #
   # @return [Foraneus] An instance of a form.
-  def self.raw(data)
+  def self.raw(data = {})
     instance = self.new
 
     data.each do |k, v|

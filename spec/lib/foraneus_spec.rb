@@ -173,7 +173,7 @@ describe Foraneus do
       let(:converter) { Foraneus::Converters::Integer.new(:required => true) }
 
       context 'when missing input parameter' do
-        subject(:form) { form_spec.parse({}) }
+        subject(:form) { form_spec.parse }
 
         it { should_not be_valid }
 
