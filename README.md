@@ -142,6 +142,47 @@ message is added to the error's `message` attribute.
 Data coming from the inside is assumed to be valid, so `.raw` won't return an instance having
 errors neither being invalid.
 
+## Required fields
+
+Fields can be declared as required.
+
+  ``` ruby
+  class MyForm < Foraneus
+    integer :delay, :required => true
+  end
+  ```
+
+If an external value is not fed into a required field, an error with key 'KeyError' will be assigned.
+
+  ``` ruby
+  form = MyForm.parse
+
+  form.valid?                       # => false
+
+  form[:errors][:delay].key         # => 'KeyError'
+  form[:errors][:delay].message     # => 'required parameter not found: "delay"'
+  ```
+
+## Blank values
+
+By default, any blank value is treated as nil.
+
+  ``` ruby
+  MyForm = Class.new(Foraneus) { string :name }
+
+  MyForm.parse(:name => '').name
+  # => nil
+  ```
+
+This behaviour can be modified by setting opt `blanks_as_nil` to false.
+
+  ``` ruby
+  MyForm = Class.new(Foraneus) { string :name, :blanks_as_nil => false }
+
+  MyForm.parse(:name => '').name
+  # => ''
+  ```
+
 ## Installation
 
  - Install `foraneus` as a gem.

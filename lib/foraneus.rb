@@ -104,26 +104,26 @@ class Foraneus
 
   # Parses data coming from an external source.
   #
-  # @param [Hash<Symbol, String>] raw_data
+  # @param [Hash<Symbol, String>] data External data.
   #
   # @return [Foraneus] An instance of a form.
-  def self.parse(raw_data = {})
+  def self.parse(data = {})
     instance = self.new
 
     parsed_keys = []
 
     fields.each do |field, converter|
       given_key = field
-      v = raw_data.fetch(given_key) do
+      v = data.fetch(given_key) do
         given_key = field.to_sym
-        raw_data.fetch(given_key, nil)
+        data.fetch(given_key, nil)
       end
 
       parsed_keys << given_key
       __parse_raw_datum(given_key, v, instance, converter)
     end
 
-    raw_data.each do |k, v|
+    data.each do |k, v|
       unless parsed_keys.include?(k)
         instance[k] = v
       end
