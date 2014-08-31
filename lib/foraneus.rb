@@ -112,20 +112,20 @@ class Foraneus
 
     parsed_keys = []
 
-    @fields.each do |k, _|
-      given_key = k
-      v = raw_data.fetch(given_key) do |k|
-        given_key = k.to_sym
+    fields.each do |field, converter|
+      given_key = field
+      v = raw_data.fetch(given_key) do
+        given_key = field.to_sym
         raw_data.fetch(given_key, nil)
       end
 
       parsed_keys << given_key
-      __parse_raw_datum(instance, given_key, v)
+      __parse_raw_datum(given_key, v, instance, converter)
     end
 
     raw_data.each do |k, v|
       unless parsed_keys.include?(k)
-        __parse_raw_datum(instance, k, v)
+        instance[k] = v
       end
     end
 
@@ -194,16 +194,14 @@ class Foraneus
   #
   # It also registers errors if the conversion fails.
   #
-  # @param [Foraneus] foraneus
   # @param [String, Symbol] k
   # @param [String] v
-  def self.__parse_raw_datum(foraneus, k, v)
+  # @param [Foraneus] foraneus
+  # @param [Converter] converter
+  def self.__parse_raw_datum(k, v, foraneus, converter)
     field = k.to_s
-    converter = fields[field]
 
     foraneus[k] = v
-
-    return unless converter
 
     if v == '' && converter.opts.fetch(:blanks_as_nil, true)
       v = nil

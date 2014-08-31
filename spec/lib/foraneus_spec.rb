@@ -101,7 +101,7 @@ describe Foraneus do
       it { should be_valid }
     end
 
-    context 'when a field is declared as allow blanks = true' do
+    context 'when a field is declared as blanks_as_nil = true' do
       let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => true) }
 
       subject(:form) { form_spec.parse(:delay => '') }
