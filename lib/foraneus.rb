@@ -140,10 +140,19 @@ class Foraneus
   def self.raw(data = {})
     instance = self.new
 
-    data.each do |k, v|
-      next unless fields.has_key?(k.to_s)
-      instance.send("#{k}=", v)
-      converter = fields[k.to_s]
+    fields.each do |field, converter|
+      given_key = field
+
+      v = data.fetch(given_key) do
+        given_key = field.to_sym
+        data.fetch(given_key, nil)
+      end
+
+      instance.send("#{field}=", v)
+
+      if v.nil?
+        v = converter.opts[:default]
+      end
 
       s = if v.nil?
         nil
@@ -151,8 +160,8 @@ class Foraneus
         converter.raw(v)
       end
 
-      instance[k] = s
-      instance.data[k] = v
+      instance[given_key] = s
+      instance.data[given_key] = v
     end
 
     instance
@@ -190,7 +199,7 @@ class Foraneus
 
   # @api private
   #
-  # Parses a raw value and assigns it to the corresponding field.
+  # Parses a value and assigns it to the corresponding field.
   #
   # It also registers errors if the conversion fails.
   #
@@ -210,7 +219,7 @@ class Foraneus
     if v.nil? && converter.opts[:required]
       raise KeyError, "required parameter not found: #{field.inspect}"
     elsif v.nil?
-      v = nil
+      v = converter.opts[:default]
     else
       v = converter.parse(v)
     end

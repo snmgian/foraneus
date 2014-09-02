@@ -178,6 +178,38 @@ describe Foraneus do
         it { should_not be_valid }
 
         its(:delay) { should be_nil }
+
+        its([:delay]) { should be_nil }
+      end
+    end
+
+    context 'when default value' do
+      let(:converter) { Foraneus::Converters::Integer.new(:default => 1) }
+
+      subject(:form) { form_spec.parse }
+
+      it { should be_valid }
+
+      its(:delay) { should eq(1) }
+
+      its(:data) { should include(:delay => 1) }
+
+      its([:delay]) { should be_nil}
+
+      its([]) { should include(:delay => nil) }
+
+      its([:errors]) { should_not include(:delay) }
+
+      context 'when missing required field' do
+        let(:converter) { Foraneus::Converters::Integer.new(:default => 1, :required => true) }
+
+        subject(:form) { form_spec.parse }
+
+        it { should_not be_valid }
+
+        its(:delay) { should be_nil }
+
+        its([:delay]) { should be_nil }
       end
     end
   end
@@ -219,6 +251,18 @@ describe Foraneus do
       its([:delay]) { should eq(nil) }
 
       its([]) { should include('delay' => nil) }
+    end
+
+    context 'when default value' do
+      let(:converter) { Foraneus::Converters::Integer.new(:default => 1) }
+
+      subject(:form) { form_spec.raw }
+
+      its(:delay) { should be_nil }
+
+      its([:delay]) { should eq('1') }
+
+      its([]) { should include(:delay => '1') }
     end
   end
 end
