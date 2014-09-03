@@ -183,6 +183,32 @@ This behaviour can be modified by setting opt `blanks_as_nil` to false.
   # => ''
   ```
 
+## Default values
+
+Define fields with default values:
+
+  ``` ruby
+  MyForm = Class.new(Foraneus) { string :name, :default => 'Alice' }
+  ```
+
+Parse data from the ouside:
+
+  ``` ruby
+  form = MyForm.parse
+
+  form.name             # => 'Alice'
+  form[:name]           # => nil, data from the outside don't include any value
+  ```
+
+Convert values back from the inside:
+
+  ``` ruby
+  form = MyForm.raw
+
+  form[:name]           # => 'Alice'
+  form.name             # => nil, data from the inside don't include any value
+  ```
+
 ## Installation
 
  - Install `foraneus` as a gem.
