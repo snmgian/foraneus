@@ -25,8 +25,8 @@ class Foraneus
   # Declares a boolean field.
   #
   # @param [Symbol] name The name of the field.
-  def self.boolean(name)
-    converter = Foraneus::Converters::Boolean.new
+  def self.boolean(name, *args)
+    converter = Foraneus::Converters::Boolean.new(*args)
     field(name, converter)
   end
 
@@ -69,16 +69,16 @@ class Foraneus
   # Declares a noop field.
   #
   # @param [Symbol] name The name of the field.
-  def self.noop(name)
-    converter = Foraneus::Converters::Noop.new
+  def self.noop(name, *args)
+    converter = Foraneus::Converters::Noop.new(*args)
     field(name, converter)
   end
 
   # Declares a string field.
   #
   # @param [Symbol] name The name of the field.
-  def self.string(name)
-    converter = Foraneus::Converters::String.new
+  def self.string(name, *args)
+    converter = Foraneus::Converters::String.new(*args)
     field(name, converter)
   end
 
