@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Foraneus::Converters::Date do
 
-  subject(:converter) { Foraneus::Converters::Date.new }
+  let(:converter) { Foraneus::Converters::Date.new }
 
   describe '#parse' do
 
@@ -11,13 +11,13 @@ describe Foraneus::Converters::Date do
 
       result = converter.parse(s)
 
-      result.year.should eq(2012)
-      result.month.should eq(04)
-      result.day.should eq(13)
+      assert_equal 2012, result.year
+      assert_equal 4, result.month
+      assert_equal 13, result.day
     end
 
-    context 'when format is given' do
-      subject(:converter) {
+    describe 'when format is given' do
+      let(:converter) {
         Foraneus::Converters::Date.new(:format => '%d/%m/%Y')
       }
 
@@ -26,32 +26,28 @@ describe Foraneus::Converters::Date do
 
         result = converter.parse(s)
 
-        result.year.should eq(2012)
-        result.month.should eq(04)
-        result.day.should eq(13)
+        assert_equal 2012, result.year
+        assert_equal 4, result.month
+        assert_equal 13, result.day
       end
     end
   end
 
   describe '#raw' do
-    let(:d) { Date.today }
+    let(:d) { Date.new(2012, 4, 13) }
 
     it 'returns a date representation' do
-      s = d.strftime('%Y-%m-%d')
-
-      converter.raw(d).should eq(s)
+      assert_equal '2012-04-13', converter.raw(d)
     end
 
-    context 'when format is given' do
+    describe 'when format is given' do
       let(:format) { '%m/%d/%Y' }
-      subject(:converter) {
+      let(:converter) {
         Foraneus::Converters::Date.new(:format => format)
       }
 
       it 'returns a date representation' do
-        s = d.strftime(format)
-
-        converter.raw(d).should eq(s)
+        assert_equal '04/13/2012', converter.raw(d)
       end
     end
   end

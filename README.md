@@ -219,10 +219,16 @@ Convert values back from the inside:
 
 ## Running tests
 
-Tests are written in RSpec. To run them all just execute the following from your command line:
+Tests are written in MiniTest. To run them all just execute the following from your command line:
 
   ``` shell
-  rspec
+  ruby spec/runner.rb
+  ```
+
+To run a specific test case:
+
+  ``` shell
+    ruby -Ispec -Ilib spec/lib/foraneus_spec.rb
   ```
 
 ## Code documentation

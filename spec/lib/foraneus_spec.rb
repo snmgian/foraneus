@@ -11,258 +11,285 @@ describe Foraneus do
   }
 
   describe '.parse' do
-    context 'with parseable data' do
-      subject(:form) { form_spec.parse(:delay => '5') }
+    describe 'with parseable data' do
+      subject { form_spec.parse(:delay => '5') }
 
-      its(:delay) { should eq(5) }
+      it 'parses' do
 
-      its(:data) { should include(:delay => 5) }
+        assert_equal 5, subject.delay
+        assert_equal 5, subject.data[:delay]
 
-      its([:delay]) { should eq('5') }
+        assert_equal '5', subject[:delay]
+        assert_nil subject['delay']
+        assert_equal({ :delay => '5' }, subject[])
 
-      its(['delay']) { should be_nil }
+        assert subject.valid?
 
-      its([]) { should include(:delay => '5') }
-
-      it { should be_valid }
-
-      its([:errors]) { should be_empty }
-
-      context 'when strings as keys' do
-        subject(:form) { form_spec.parse('delay' => '5') }
-
-        its(['delay']) { should eq('5') }
-
-        its([:delay]) { should eq('5') }
-
-        its(:data) { should include('delay' => 5) }
-
-        its([]) { should include('delay' => '5') }
+        assert_empty subject[:errors]
       end
 
-      context 'when empty strings' do
-        let(:converter) { Foraneus::Converters::String.new }
+      describe 'when strings as keys' do
+        subject { form_spec.parse('delay' => '5') }
 
-        subject(:form) { form_spec.parse(:delay => '') }
+        it 'parses given data' do
+          assert_equal '5', subject['delay']
+          assert_equal '5', subject[:delay]
+          assert_equal 5, subject.data['delay']
 
-        its(:delay) { should eq(nil) }
-
-        its(:data) { should include(:delay => nil) }
-
-        it { should be_valid }
-      end
-    end
-
-    context 'with non parseable data' do
-      subject(:form) { form_spec.parse(:delay => 'FIVE') }
-
-      its(:delay) { should be_nil }
-
-      its([:delay]) { should eq('FIVE') }
-
-      it { should_not be_valid }
-
-      its([:errors]) { should include(:delay) }
-
-      describe 'an error' do
-        subject(:error) { form[:errors].values.first }
-
-        let(:converter_exception) do
-          begin
-            converter.parse('FIVE')
-          rescue
-            e = $!
-          end
-
-          e
+          assert_equal({ 'delay' => '5' }, subject[])
         end
-
-        its(:key) { should eq(converter_exception.class.name) }
-
-        its(:message) { should eq(converter_exception.message) }
-      end
-    end
-
-    context 'with unexpected data' do
-      subject(:form) { form_spec.parse(:position => 'north') }
-
-      it 'does not have a getter for the received param' do
-        expect {
-          form.position
-        }.to raise_error(NoMethodError)
       end
 
-      its(:data) { should_not include(:position) }
+      describe 'when empty strings' do
+        subject { form_spec.parse(:delay => '') }
 
-      its([:position]) { should eq('north') }
+        it 'parses' do
+          assert_nil subject.delay
 
-      its([]) { should include(:position => 'north') }
+          assert_nil subject.data[:delay]
 
-      it { should be_valid }
-    end
+          assert subject.valid?
+        end
+      end
 
-    context 'when a field is declared as blanks_as_nil = true' do
-      let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => true) }
+      describe 'with non parseable data' do
+        subject { form_spec.parse(:delay => 'FIVE') }
 
-      subject(:form) { form_spec.parse(:delay => '') }
+        it 'sets corresponding data as nil' do
+          assert_nil subject.delay
 
-      its(:delay) { should be_nil }
+          assert_equal 'FIVE', subject[:delay]
 
-      its(:data) { should include(:delay => nil) }
+          refute subject.valid?
 
-      its([:delay]) { should eq('') }
-
-      its([]) { should include(:delay => '') }
-    end
-
-    context 'when a field is declared as blanks_as_nil = false' do
-      let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => false) }
-
-      subject(:form) { form_spec.parse(:delay => '') }
-
-      its(:delay) { should eq('') }
-
-      its(:data) { should include(:delay => '') }
-    end
-
-    shared_examples 'an absent parameters value handler' do |missing_value|
-      subject(:form) { form_spec.parse(:delay => missing_value) }
-
-      it { should be_valid }
-
-      its(:delay) { should be_nil }
-
-      its(:data) { should include(:delay => nil) }
-
-      its([:delay]) { should eq(missing_value) }
-
-      its([]) { should include(:delay => missing_value) }
-
-      context 'when required field' do
-        let(:converter) { Foraneus::Converters::Integer.new(:required => true) }
-
-        it { should_not be_valid }
-
-        its(:delay) { should be_nil }
-
-        its(:data) { should_not include(:delay) }
-
-        its([:delay]) { should eq(missing_value) }
-
-        its([]) { should include(:delay => missing_value) }
-
-        its([:errors]) { should include(:delay) }
+          assert_includes subject[:errors], :delay
+        end
 
         describe 'an error' do
-          subject(:error) { form[:errors].values.first }
+          let(:error) { subject[:errors].values.first }
 
-          its(:key) { should eq('KeyError') }
+          let(:converter_exception) do
+            begin
+              converter.parse('FIVE')
+            rescue
+              e = $!
+            end
+
+            e
+          end
+
+          it 'provides a key' do
+            assert_equal error.key, converter_exception.class.name
+          end
+
+          it 'provides a message' do
+            assert_equal error.message, converter_exception.message
+          end
         end
       end
-    end
 
-    context 'with nil values' do
-      it_behaves_like 'an absent parameters value handler', nil
-    end
+      describe 'with unexpected data' do
+        subject { form_spec.parse(:position => 'north') }
 
-    context 'with empty values' do
-      it_behaves_like 'an absent parameters value handler', ''
-    end
+        it 'does not have a getter for the received param' do
+          assert_raises(NoMethodError) {
+            subject.position
+          }
+        end
 
-    context 'when required field' do
-      let(:converter) { Foraneus::Converters::Integer.new(:required => true) }
+        it 'parses' do
+          refute_includes subject.data, :position
 
-      context 'when missing input parameter' do
-        subject(:form) { form_spec.parse }
+          assert_equal 'north', subject[:position]
 
-        it { should_not be_valid }
+          assert_equal 'north', subject[][:position]
 
-        its(:delay) { should be_nil }
-
-        its([:delay]) { should be_nil }
+          assert subject.valid?
+        end
       end
-    end
 
-    context 'when default value' do
-      let(:converter) { Foraneus::Converters::Integer.new(:default => 1) }
+      describe 'when a field is declared as blanks_as_nil = true' do
+        let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => true) }
 
-      subject(:form) { form_spec.parse }
+        subject { form_spec.parse(:delay => '') }
 
-      it { should be_valid }
+        it 'parses' do
+          assert_nil subject.delay
 
-      its(:delay) { should eq(1) }
+          assert_equal({ :delay => nil }, subject.data)
+          assert_equal '', subject[:delay]
+          assert_equal({ :delay => '' }, subject[])
+        end
+      end
 
-      its(:data) { should include(:delay => 1) }
+      describe 'when a field is declared as blanks_as_nil = false' do
+        let(:converter) { Foraneus::Converters::String.new(:blanks_as_nil => false) }
 
-      its([:delay]) { should be_nil}
+        subject { form_spec.parse(:delay => '') }
 
-      its([]) { should include(:delay => nil) }
+        it 'parses' do
+          assert_equal '', subject.delay
+          assert_equal '', subject.data[:delay]
+        end
+      end
 
-      its([:errors]) { should_not include(:delay) }
+      an_absent_parameters_value_handler = ->(missing_value) do
+        subject { form_spec.parse(:delay => missing_value) }
 
-      context 'when missing required field' do
-        let(:converter) { Foraneus::Converters::Integer.new(:default => 1, :required => true) }
+        it 'parses' do
+          assert subject.valid?
 
-        subject(:form) { form_spec.parse }
+          assert_nil subject.delay
 
-        it { should_not be_valid }
+          assert_equal missing_value, subject[:delay]
+          assert_equal missing_value, subject[][:delay]
+        end
 
-        its(:delay) { should be_nil }
+        describe 'when required field' do
+          let(:converter) { Foraneus::Converters::Integer.new(:required => true) }
 
-        its([:delay]) { should be_nil }
+          it 'parses' do
+            refute subject.valid?
+
+            assert_nil subject.delay
+
+            refute_includes subject.data, :delay
+
+            assert_equal missing_value, subject[][:delay]
+
+            assert_includes subject[:errors], :delay
+          end
+
+          describe 'an error' do
+            let(:error) { subject[:errors].values.first }
+
+            it 'has key = KeyError' do
+              assert_equal 'KeyError', error.key
+            end
+          end
+        end
+      end
+
+      describe 'with nil values' do
+        instance_exec(nil, &an_absent_parameters_value_handler)
+      end
+
+      describe 'with empty values' do
+        instance_exec('', &an_absent_parameters_value_handler)
+      end
+
+      describe 'when required field' do
+        let(:converter) { Foraneus::Converters::Integer.new(:required => true) }
+
+        describe 'when missing input parameter' do
+          subject { form_spec.parse }
+
+          it 'parses' do
+            refute subject.valid?
+
+            assert_nil subject.delay
+            assert_nil subject[:delay]
+          end
+        end
+      end
+
+      describe 'when default value' do
+        let(:converter) { Foraneus::Converters::Integer.new(:default => 1) }
+
+        subject { form_spec.parse }
+
+        it 'parses' do
+          assert subject.valid?
+
+          assert_equal 1, subject.delay
+
+          assert_equal 1, subject.data[:delay]
+
+          assert_nil subject[:delay]
+
+          assert_nil subject[][:delay]
+
+          refute subject[:errors].include?(:delay)
+        end
+
+        describe 'when missing required field' do
+          let(:converter) { Foraneus::Converters::Integer.new(:default => 1, :required => true) }
+
+          subject { form_spec.parse }
+
+          it 'parses' do
+            refute subject.valid?
+
+            assert_nil subject.delay
+
+            assert_nil subject[:delay]
+          end
+        end
       end
     end
   end
 
   describe '.raw' do
-    subject(:form) { form_spec.raw(:delay => 5) }
+    subject { form_spec.raw(:delay => 5) }
 
-    its(:data) { should include(:delay => 5) }
+    it 'parses' do
+      assert_equal 5, subject.data[:delay]
 
-    its(:delay) { should eq(5) }
+      assert_equal 5, subject.delay
 
-    its([:delay]) { should eq('5') }
+      assert_equal '5', subject[:delay]
 
-    its([]) { should include(:delay => '5') }
+      assert_equal '5', subject[][:delay]
 
-    it { should be_valid }
+      assert subject.valid?
 
-    its([:errors]) { should be_empty }
-
-    context 'when strings as keys' do
-      subject(:form) { form_spec.raw('delay' => 5) }
-
-      its(:data) { should include('delay' => 5) }
-
-      its(['delay']) { should eq('5') }
-
-      its([:delay]) { should eq('5') }
-
-      its([]) { should include('delay' => '5') }
+      assert_empty subject[:errors]
     end
 
-    context 'with nil values' do
-      subject(:form) { form_spec.raw('delay' => nil) }
+    describe 'when strings as keys' do
+      subject { form_spec.raw('delay' => 5) }
 
-      its(:data) { should include('delay' => nil) }
+      it 'parses' do
+        assert_equal 5, subject.data['delay']
 
-      its(['delay']) { should eq(nil) }
+        assert_equal '5', subject['delay']
 
-      its([:delay]) { should eq(nil) }
+        assert_equal '5', subject[:delay]
 
-      its([]) { should include('delay' => nil) }
+        assert_equal '5', subject[]['delay']
+
+        assert subject.valid?
+
+        assert_empty subject[:errors]
+      end
     end
 
-    context 'when default value' do
+    describe 'with nil values' do
+      subject { form_spec.raw('delay' => nil) }
+
+      it 'parses' do
+        assert_nil subject.data['delay']
+
+        assert_nil subject['delay']
+
+        assert_nil subject[:delay]
+
+        assert_nil subject[]['delay']
+      end
+    end
+
+    describe 'when default value' do
       let(:converter) { Foraneus::Converters::Integer.new(:default => 1) }
 
-      subject(:form) { form_spec.raw }
+      subject { form_spec.raw }
 
-      its(:delay) { should be_nil }
+      it 'parses' do
+        assert_nil subject.delay
 
-      its([:delay]) { should eq('1') }
-
-      its([]) { should include(:delay => '1') }
+        assert_equal '1', subject[:delay]
+        assert_equal '1', subject[][:delay]
+      end
     end
   end
+
 end
