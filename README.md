@@ -62,16 +62,16 @@ Declare source classes by inheriting from `Foraneus` base class.
   end
   ```
 
-Fields are declared in two ways:
+Fields are declared by two ways:
 
  - calling `.field`
  - calling a shortcut method, like `.float`
 
 
-There are handy methods for any of the built-in converters: boolean, date, decimal, float, integer,
+There are shortcut methods for any of the built-in converters: boolean, date, decimal, float, integer,
 noop, and string.
 
-When no converter is passed to `.field`, Foraneus::Converters::Noop is assigned to the declared
+When no converter is passed to `.field`, `Foraneus::Converters::Noop` is assigned to the declared
 field.
 
 ## Instantiation
@@ -91,10 +91,10 @@ Converters have two interrelated responsibilities:
  - Parse data, like the string `"3,000"`, into an object, `like 3_000`.
  - Serialize data, like integer `3_000`, into string `"3,000"`
 
-A converter is simply an object that responds to `#parse(s)`, `#raw(v)`, and `#opts` methods.
+A converter is an object that responds to `#parse(s)`, `#raw(v)`, and `#opts` methods.
 
 When `#parse(s)` raises a StandardError exception, or any of its descendants, the exception is
-rescued and a Foraneus::Error instance is added to `Foraneus#errors` map.
+rescued and a `Foraneus::Error` instance is added to `Foraneus#errors` map.
 
 `#opts` should return the opts hash used to instantiate the converter.
 
@@ -133,11 +133,11 @@ Invalid one:
   form[:errors][:delay].message   # => 'invalid value for Integer(): "INVALID"'
   ```
 
-`#errors` is a map in which keys correspond to field names, and values are instances of
+`[:errors]` is a map in which keys correspond to field names, and values are instances of
 `Foraneus::Error`.
 
 The name of the exception raised by `#parse` is the error's `key` attribute, and the exception's
-message is added to the error's `message` attribute.
+message is set to the error's `message` attribute.
 
 Data coming from the inside is assumed to be valid, so `.raw` won't return an instance having
 errors neither being invalid.
@@ -152,7 +152,7 @@ Fields can be declared as required.
   end
   ```
 
-If an external value is not fed into a required field, an error with key 'KeyError' will be assigned.
+If an external value is not fed into a required field, an error with key `KeyError` will be assigned.
 
   ``` ruby
   form = MyForm.parse
@@ -197,7 +197,8 @@ Parse data from the ouside:
   form = MyForm.parse
 
   form.name             # => 'Alice'
-  form[:name]           # => nil, data from the outside don't include any value
+  form[:name]           # => nil, because data from the outside
+                        #    don't include any value
   ```
 
 Convert values back from the inside:
@@ -206,7 +207,8 @@ Convert values back from the inside:
   form = MyForm.raw
 
   form[:name]           # => 'Alice'
-  form.name             # => nil, data from the inside don't include any value
+  form.name             # => nil, because data from the inside
+                        #    don't include any value
   ```
 
 ## Installation
