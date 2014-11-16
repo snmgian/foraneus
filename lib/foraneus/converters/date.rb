@@ -16,7 +16,10 @@ class Foraneus
         @format = opts[:format] || DEFAULT_FORMAT
       end
 
-      # return [Date]
+
+      # @raise [ArgumentError] with message 'invalid date'
+      #
+      # @return [Date]
       def parse(s)
         ::Date.strptime(s, @format)
       end

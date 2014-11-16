@@ -13,6 +13,8 @@ class Foraneus
         @delimiter = opts[:delimiter]
       end
 
+      # @raise [ArgumentError] with message 'invalid value for Integer(): ...'
+      #
       # @return [Integer]
       def parse(s)
         s = s.gsub(@delimiter, '') if @delimiter

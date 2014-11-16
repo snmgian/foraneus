@@ -21,6 +21,8 @@ class Foraneus
         @separator = opts[:separator] || DEFAULT_SEPARATOR
       end
 
+      # @raise [ArgumentError] with message 'invalid value for Float(): ...'
+      #
       # @return [Float]
       def parse(s)
         integer_part, fractional_part = split(s)
