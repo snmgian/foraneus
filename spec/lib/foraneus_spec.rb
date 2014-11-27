@@ -10,6 +10,70 @@ describe Foraneus do
     end
   }
 
+  describe 'when errors accessor is renamed' do
+    let(:form_spec) {
+      Class.new(Foraneus) do
+
+        field :errors
+
+        accessors[:errors] = :non_clashing_errors
+      end
+    }
+
+    describe 'a parsed form' do
+      let(:form) { form_spec.parse(:errors => 'errors') }
+
+      it 'can return the errors field value' do
+        assert_equal 'errors', form.errors
+      end
+
+      it 'can return the raw errors value' do
+        assert_equal 'errors', form[:errors]
+      end
+
+      it 'responds to the new accessor' do
+        assert_equal({}, form[:non_clashing_errors])
+      end
+    end
+  end
+
+  describe 'when data accessor is renamed' do
+    let(:form_spec) {
+      Class.new(Foraneus) do
+
+        field :delay
+        field :data
+
+        accessors[:data] = :non_clashing_data
+      end
+    }
+
+    describe 'a parsed form' do
+      let(:form) { form_spec.parse(:delay => 5, :data => 'value') }
+
+      it 'can return the data field value' do
+        assert_equal 'value', form.data
+      end
+
+      it 'responds to the new accessor' do
+        assert_equal({:delay => 5, :data => 'value'}, form.non_clashing_data)
+      end
+
+    end
+
+    describe 'when obtaining a raw representation' do
+      let(:form) { form_spec.raw(:delay => 5, :data => 'value') }
+
+      it 'allows access to the data field value' do
+        assert_equal 'value', form[:data]
+      end
+
+      it 'allows access to whole data set' do
+        assert_equal({:delay => 5, :data => 'value'}, form[])
+      end
+    end
+  end
+
   describe '.parse' do
     describe 'with parseable data' do
       subject { form_spec.parse(:delay => '5') }
@@ -24,8 +88,10 @@ describe Foraneus do
         assert_equal({ :delay => '5' }, subject[])
 
         assert subject.valid?
+        assert subject[:valid?]
 
         assert_empty subject[:errors]
+        assert_equal(subject.errors, subject[:errors])
       end
 
       describe 'when strings as keys' do
@@ -61,8 +127,10 @@ describe Foraneus do
           assert_equal 'FIVE', subject[:delay]
 
           refute subject.valid?
+          refute subject[:valid?]
 
           assert_includes subject[:errors], :delay
+          assert_equal(subject.errors, subject[:errors])
         end
 
         describe 'an error' do
@@ -158,6 +226,7 @@ describe Foraneus do
             assert_equal missing_value, subject[][:delay]
 
             assert_includes subject[:errors], :delay
+            assert_equal(subject.errors, subject[:errors])
           end
 
           describe 'an error' do
@@ -242,8 +311,10 @@ describe Foraneus do
       assert_equal '5', subject[][:delay]
 
       assert subject.valid?
+      assert subject[:valid?]
 
       assert_empty subject[:errors]
+      assert_equal(subject.errors, subject[:errors])
     end
 
     describe 'when strings as keys' do

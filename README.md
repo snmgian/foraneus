@@ -129,11 +129,11 @@ Invalid one:
 
   form.valid?                     # => false
 
-  form[:errors][:delay].key       # => 'ArgumentError'
-  form[:errors][:delay].message   # => 'invalid value for Integer(): "INVALID"'
+  form.errors[:delay].key       # => 'ArgumentError'
+  form.errors[:delay].message   # => 'invalid value for Integer(): "INVALID"'
   ```
 
-`[:errors]` is a map in which keys correspond to field names, and values are instances of
+`#errors` is a map in which keys correspond to field names, and values are instances of
 `Foraneus::Error`.
 
 The name of the exception raised by `#parse` is the error's `key` attribute, and the exception's
@@ -209,6 +209,30 @@ Convert values back from the inside:
   form[:name]           # => 'Alice'
   form.name             # => nil, because data from the inside
                         #    don't include any value
+  ```
+
+## Prevent name clashes
+
+It is possible to rename methods `#errors` and `#data` so it will not conflict with defined fields.
+
+  ``` ruby
+  MyForm = Class.new(Foraneus) {
+    field :errors
+    field :data
+
+    accessors[:errors] = :non_clashing_errors
+    accessors[:data] = :non_clashing_data
+  }
+  ```
+
+  ``` ruby
+  form = MyForm.parse(:errors => 'some errors', :data => 'some data')
+
+  form.errors                 # => 'some errors'
+  form.data                   # => 'some data'
+
+  form.non_clashing_errors    # []
+  form.non_clashing_data      # { :errors => 'some errors', :data => 'some data' }
   ```
 
 ## Installation

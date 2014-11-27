@@ -11,15 +11,9 @@ require_relative 'foraneus/errors'
 class Foraneus
 
 
-  # @return [Hash] Parsed data.
-  attr_accessor :data
-
   # @api private
   def initialize
-    @data = {}
-    @raw_data = {}
-
-    @errors = {}
+    instance_variable_set(:'@', {})
   end
 
   # Declares a boolean field.
@@ -102,13 +96,38 @@ class Foraneus
     @fields ||= {}
   end
 
+  def self.accessors
+    @accessors ||= {
+      :data => :data,
+      :errors => :errors
+    }
+  end
+
+  def self.create_instance
+    instance = self.new
+    spec = self
+
+    instance.singleton_class.send(:attr_reader, self.accessors[:data])
+
+    instance.instance_exec do
+      instance.instance_variable_set(:"@#{spec.accessors[:data]}", {})
+    end
+
+    instance.singleton_class.send(:attr_reader, self.accessors[:errors])
+    instance.instance_exec do
+      instance.instance_variable_set(:"@#{spec.accessors[:errors]}", {})
+    end
+
+    instance
+  end
+
   # Parses data coming from an external source.
   #
   # @param [Hash<Symbol, String>] data External data.
   #
   # @return [Foraneus] An instance of a form.
   def self.parse(data = {})
-    instance = self.new
+    instance = self.create_instance
 
     parsed_keys = []
 
@@ -138,7 +157,7 @@ class Foraneus
   #
   # @return [Foraneus] An instance of a form.
   def self.raw(data = {})
-    instance = self.new
+    instance = self.create_instance
 
     fields.each do |field, converter|
       given_key = field
@@ -161,7 +180,7 @@ class Foraneus
       end
 
       instance[given_key] = s
-      instance.data[given_key] = v
+      instance.send(self.accessors[:data])[given_key] = v
     end
 
     instance
@@ -171,13 +190,17 @@ class Foraneus
   # @return [Array<Error>] errors when m == :errors.
   # @return [String] raw data value for the field m.
   def [](m = nil)
-    if m == :errors
-      @errors
+    if m == self.class.accessors[:errors]
+      send(m)
+    elsif m == :valid?
+      valid?
     elsif m.nil?
-      @raw_data
+      instance_variable_get(:'@')
     else
-      @raw_data.fetch(m) do
-        @raw_data[m.to_s]
+      raw_data = instance_variable_get(:'@')
+
+      raw_data.fetch(m) do
+        raw_data[m.to_s]
       end
     end
   end
@@ -189,7 +212,9 @@ class Foraneus
   # @param [Symbol] k Field name.
   # @param [String] v Raw value.
   def []=(k, v)
-    @raw_data[k] = v
+    raw_data = instance_variable_get(:'@')
+
+    raw_data[k] = v
   end
 
   # Returns true if no conversion errors occurred. false otherwise.
@@ -225,11 +250,11 @@ class Foraneus
     end
 
     foraneus.send("#{field}=", v)
-    foraneus.data[k] = v
+    foraneus.send(self.accessors[:data])[k] = v
 
   rescue
     error = Foraneus::Error.new($!.class.name, $!.message)
-    foraneus.instance_variable_get(:@errors)[k] = error
+    foraneus.send(self.accessors[:errors])[k] = error
   end
   private_class_method :__parse_raw_datum
 
