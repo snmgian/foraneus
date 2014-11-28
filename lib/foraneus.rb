@@ -13,7 +13,7 @@ class Foraneus
 
   # @api private
   def initialize
-    instance_variable_set(:'@', {})
+    @_ = {}
   end
 
   # Declares a boolean field.
@@ -191,12 +191,10 @@ class Foraneus
   # @return [String] raw data value for the field m.
   def [](m = nil)
     if m.nil?
-      instance_variable_get(:'@')
+      @_
     else
-      raw_data = instance_variable_get(:'@')
-
-      raw_data.fetch(m) do
-        raw_data[m.to_s]
+      @_.fetch(m) do
+        @_[m.to_s]
       end
     end
   end
@@ -208,9 +206,10 @@ class Foraneus
   # @param [Symbol] k Field name.
   # @param [String] v Raw value.
   def []=(k, v)
-    raw_data = instance_variable_get(:'@')
+    #raw_data = @_
 
-    raw_data[k] = v
+    #raw_data[k] = v
+    @_[k] = v
   end
 
   # Returns true if no conversion errors occurred. false otherwise.
