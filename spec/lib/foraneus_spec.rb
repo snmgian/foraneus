@@ -32,7 +32,7 @@ describe Foraneus do
       end
 
       it 'responds to the new accessor' do
-        assert_equal({}, form[:non_clashing_errors])
+        assert_equal({}, form.non_clashing_errors)
       end
     end
   end
@@ -88,10 +88,8 @@ describe Foraneus do
         assert_equal({ :delay => '5' }, subject[])
 
         assert subject.valid?
-        assert subject[:valid?]
 
-        assert_empty subject[:errors]
-        assert_equal(subject.errors, subject[:errors])
+        assert_empty subject.errors
       end
 
       describe 'when strings as keys' do
@@ -127,14 +125,12 @@ describe Foraneus do
           assert_equal 'FIVE', subject[:delay]
 
           refute subject.valid?
-          refute subject[:valid?]
 
-          assert_includes subject[:errors], :delay
-          assert_equal(subject.errors, subject[:errors])
+          assert_includes subject.errors, :delay
         end
 
         describe 'an error' do
-          let(:error) { subject[:errors].values.first }
+          let(:error) { subject.errors.values.first }
 
           let(:converter_exception) do
             begin
@@ -225,12 +221,11 @@ describe Foraneus do
 
             assert_equal missing_value, subject[][:delay]
 
-            assert_includes subject[:errors], :delay
-            assert_equal(subject.errors, subject[:errors])
+            assert_includes subject.errors, :delay
           end
 
           describe 'an error' do
-            let(:error) { subject[:errors].values.first }
+            let(:error) { subject.errors.values.first }
 
             it 'has key = KeyError' do
               assert_equal 'KeyError', error.key
@@ -278,7 +273,7 @@ describe Foraneus do
 
           assert_nil subject[][:delay]
 
-          refute subject[:errors].include?(:delay)
+          refute subject.errors.include?(:delay)
         end
 
         describe 'when missing required field' do
@@ -311,10 +306,8 @@ describe Foraneus do
       assert_equal '5', subject[][:delay]
 
       assert subject.valid?
-      assert subject[:valid?]
 
-      assert_empty subject[:errors]
-      assert_equal(subject.errors, subject[:errors])
+      assert_empty subject.errors
     end
 
     describe 'when strings as keys' do
@@ -331,7 +324,7 @@ describe Foraneus do
 
         assert subject.valid?
 
-        assert_empty subject[:errors]
+        assert_empty subject.errors
       end
     end
 

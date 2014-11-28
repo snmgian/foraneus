@@ -119,7 +119,7 @@ Valid instance:
 
   ``` ruby
   form.valid?     # => true
-  form[:errors]   # => {}
+  form.errors   # => {}
   ```
 
 Invalid one:
@@ -159,8 +159,8 @@ If an external value is not fed into a required field, an error with key `KeyErr
 
   form.valid?                       # => false
 
-  form[:errors][:delay].key         # => 'KeyError'
-  form[:errors][:delay].message     # => 'required parameter not found: "delay"'
+  form.errors[:delay].key         # => 'KeyError'
+  form.errors[:delay].message     # => 'required parameter not found: "delay"'
   ```
 
 ## Blank values

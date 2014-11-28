@@ -190,11 +190,7 @@ class Foraneus
   # @return [Array<Error>] errors when m == :errors.
   # @return [String] raw data value for the field m.
   def [](m = nil)
-    if m == self.class.accessors[:errors]
-      send(m)
-    elsif m == :valid?
-      valid?
-    elsif m.nil?
+    if m.nil?
       instance_variable_get(:'@')
     else
       raw_data = instance_variable_get(:'@')
