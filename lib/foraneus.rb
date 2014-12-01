@@ -158,20 +158,7 @@ class Foraneus
         data.fetch(given_key, nil)
       end
 
-      instance.send("#{field}=", v)
-
-      if v.nil?
-        v = converter.opts[:default]
-      end
-
-      s = if v.nil?
-        nil
-      else
-        converter.raw(v)
-      end
-
-      instance[given_key] = s
-      instance.send(self.accessors[:data])[given_key] = v
+      __raw_datum(given_key, v, instance, converter)
     end
 
     instance
@@ -223,17 +210,7 @@ class Foraneus
 
     foraneus[k] = v
 
-    if v == '' && converter.opts.fetch(:blanks_as_nil, true)
-      v = nil
-    end
-
-    if v.nil? && converter.opts[:required]
-      raise KeyError, "required parameter not found: #{field.inspect}"
-    elsif v.nil?
-      v = converter.opts[:default]
-    else
-      v = converter.parse(v)
-    end
+    v = __parse(k, v, converter)
 
     foraneus.send("#{field}=", v)
     foraneus.send(self.accessors[:data])[k] = v
@@ -243,6 +220,58 @@ class Foraneus
     foraneus.send(self.accessors[:errors])[k] = error
   end
   private_class_method :__parse_raw_datum
+
+  # @api private
+  #
+  # Parses a raw value.
+  #
+  # @param [String, Symbol] field
+  # @param [String] v Raw value.
+  # @param converter
+  #
+  # @raise [KeyError] if converter requires a value but no one is given.
+  #
+  # @return [Object]
+  def self.__parse(field, v, converter)
+    if v == '' && converter.opts.fetch(:blanks_as_nil, true)
+      v = nil
+    end
+
+    if v.nil? && converter.opts[:required]
+      raise KeyError, "required parameter not found: #{field.inspect}"
+    elsif v.nil?
+      converter.opts[:default]
+    else
+      converter.parse(v)
+    end
+  end
+  private_class_method :__parse
+
+  # @api private
+  #
+  # Obtains a raw representation of a value and assigns it to the corresponding field.
+  #
+  # It also registers errors if the conversion fails.
+  #
+  # @param [String, Symbol] k
+  # @param [String] v
+  # @param [Foraneus] foraneus
+  # @param [Converter] converter
+  def self.__raw_datum(k, v, foraneus, converter)
+    foraneus.send("#{k}=", v)
+
+    if v.nil?
+      v = converter.opts[:default]
+    end
+
+    s = unless v.nil?
+      converter.raw(v)
+    end
+
+    foraneus[k] = s
+    foraneus.send(self.accessors[:data])[k] = v
+  end
+  private_class_method :__raw_datum
 
   # @api private
   #
