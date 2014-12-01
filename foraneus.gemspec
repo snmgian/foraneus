@@ -12,6 +12,6 @@ Gem::Specification.new do |s|
   s.files           = Dir.glob("{lib}/**/*") + %w(COPYING COPYING.LESSER README.md)
   s.test_files      = Dir.glob("{spec}/**/*")
 
-  s.add_development_dependency('yard-kramdown')
-  s.add_development_dependency('yard')
+  s.add_development_dependency('yard-kramdown', '0.0.1')
+  s.add_development_dependency('yard', '0.8.7.6')
 end
