@@ -105,18 +105,9 @@ class Foraneus
 
   def self.create_instance
     instance = self.new
-    spec = self
 
-    instance.singleton_class.send(:attr_reader, self.accessors[:data])
-
-    instance.instance_exec do
-      instance.instance_variable_set(:"@#{spec.accessors[:data]}", {})
-    end
-
-    instance.singleton_class.send(:attr_reader, self.accessors[:errors])
-    instance.instance_exec do
-      instance.instance_variable_set(:"@#{spec.accessors[:errors]}", {})
-    end
+    __singleton_attr_reader(instance, :data, {})
+    __singleton_attr_reader(instance, :errors, {})
 
     instance
   end
@@ -252,5 +243,23 @@ class Foraneus
     foraneus.send(self.accessors[:errors])[k] = error
   end
   private_class_method :__parse_raw_datum
+
+  # @api private
+  #
+  # Creates a singleton attribute reader on an instance.
+  #
+  # @param [Foraneus] instance
+  # @param [Symbol] attribute
+  # @param initial_value
+  def self.__singleton_attr_reader(instance, attribute, initial_value = nil)
+    spec = instance.class
+
+    instance.singleton_class.send(:attr_reader, spec.accessors[attribute])
+
+    instance.instance_exec do
+      instance.instance_variable_set(:"@#{spec.accessors[attribute]}", initial_value)
+    end
+  end
+  private_class_method :__singleton_attr_reader
 
 end
