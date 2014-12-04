@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = 'foraneus'
-  s.version         = '0.0.13'
+  s.version         = '0.0.14'
   s.platform        = Gem::Platform::RUBY
   s.authors         = ['Gianfranco Zas']
   s.email           = 'snmgian@gmail.com'
@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description     = 'Provides two way transformation mechanisms to external data.'
   s.licenses        = ['LGPL']
 
-  spec.required_ruby_version = '>= 1.8.7'
+  s.required_ruby_version = '>= 1.8.7'
 
   s.files           = Dir.glob("{lib}/**/*") + %w(COPYING COPYING.LESSER README.md)
   s.test_files      = Dir.glob("{spec}/**/*")
