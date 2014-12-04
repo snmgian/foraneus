@@ -9,6 +9,8 @@ Gem::Specification.new do |s|
   s.description     = 'Provides two way transformation mechanisms to external data.'
   s.licenses        = ['LGPL']
 
+  spec.required_ruby_version = '>= 1.8.7'
+
   s.files           = Dir.glob("{lib}/**/*") + %w(COPYING COPYING.LESSER README.md)
   s.test_files      = Dir.glob("{spec}/**/*")
 
