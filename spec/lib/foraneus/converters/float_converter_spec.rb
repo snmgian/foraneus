@@ -22,7 +22,7 @@ describe Foraneus::Converters::Float do
       end
 
       describe 'with big ones' do
-        let(:big_number) { (11 ** 20) + 0.33 }
+        let(:big_number) { (11 ** 11) + 0.33 }
         let(:raw_big_number) { big_number.to_s }
 
         it 'also returns a float number' do

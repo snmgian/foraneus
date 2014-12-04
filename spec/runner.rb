@@ -1,6 +1,4 @@
-require 'minitest/autorun'
-
-add_to_load_path = ->(path) {
+add_to_load_path = lambda { |path|
   unless $LOAD_PATH.include?(path)
     $LOAD_PATH << path
   end

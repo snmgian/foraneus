@@ -13,10 +13,12 @@ class Foraneus
         @delimiter = opts[:delimiter]
       end
 
-      # @raise [ArgumentError] with message 'invalid value for Integer(): ...'
+      # @raise [TypeError] with message 'invalid value for Integer(): ...'
       #
       # @return [Integer]
       def parse(s)
+        raise TypeError, "can't convert nil into Integer" if s.nil?
+
         s = s.gsub(@delimiter, '') if @delimiter
 
         Kernel.Integer(s)

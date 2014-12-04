@@ -197,7 +197,7 @@ describe Foraneus do
         end
       end
 
-      an_absent_parameters_value_handler = ->(missing_value) do
+      an_absent_parameters_value_handler = lambda do |missing_value|
         subject { form_spec.parse(:delay => missing_value) }
 
         it 'parses' do

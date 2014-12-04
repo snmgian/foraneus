@@ -1,15 +1,18 @@
-require_relative 'foraneus/converters/boolean'
-require_relative 'foraneus/converters/date'
-require_relative 'foraneus/converters/decimal'
-require_relative 'foraneus/converters/float'
-require_relative 'foraneus/converters/integer'
-require_relative 'foraneus/converters/noop'
-require_relative 'foraneus/converters/string'
-require_relative 'foraneus/errors'
+if RUBY_VERSION == '1.8.7'
+  require 'foraneus/compatibility/ruby-1.8.7'
+end
+
+require 'foraneus/converters/boolean'
+require 'foraneus/converters/date'
+require 'foraneus/converters/decimal'
+require 'foraneus/converters/float'
+require 'foraneus/converters/integer'
+require 'foraneus/converters/noop'
+require 'foraneus/converters/string'
+require 'foraneus/errors'
 
 # Foraneus base class used to declare a data set, aka 'form'.
 class Foraneus
-
 
   # @api private
   def initialize

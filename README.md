@@ -251,10 +251,22 @@ Tests are written in MiniTest. To run them all just execute the following from y
   ruby spec/runner.rb
   ```
 
+Execute the following when ruby 1.8.7:
+
+  ``` shell
+  ruby -rubygems spec/runner.rb
+  ```
+
 To run a specific test case:
 
   ``` shell
     ruby -Ispec -Ilib spec/lib/foraneus_spec.rb
+  ```
+
+When running under ruby 1.8.7:
+
+  ``` shell
+    ruby -rubygems -Ispec -Ilib spec/lib/foraneus_spec.rb
   ```
 
 ## Code documentation
