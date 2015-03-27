@@ -67,6 +67,10 @@ class Foraneus
       converter.raw(v) unless v.nil?
     end
 
+    def self.nested_converter?(converter)
+      Class === converter && converter.ancestors.include?(Foraneus)
+    end
+
     # Creates a singleton attribute accessor on an instance.
     #
     # @param [Foraneus] instance

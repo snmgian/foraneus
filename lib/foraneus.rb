@@ -1,3 +1,7 @@
+# TODO refactor
+class NestedFormError < StandardError
+end
+
 if RUBY_VERSION == '1.8.7'
   require 'foraneus/compatibility/ruby-1.8.7'
 end
@@ -7,6 +11,7 @@ require 'foraneus/converters/date'
 require 'foraneus/converters/decimal'
 require 'foraneus/converters/float'
 require 'foraneus/converters/integer'
+require 'foraneus/converters/nested'
 require 'foraneus/converters/noop'
 require 'foraneus/converters/string'
 require 'foraneus/errors'
@@ -52,6 +57,15 @@ class Foraneus
   # @param (see Foraneus::Converters::Float#initialize)
   def self.float(name, *args)
     converter = Foraneus::Converters::Float.new(*args)
+    field(name, converter)
+  end
+
+  # Declares a nested form field
+  #
+  # @param [Symbol] name The name of the field.
+  # @yield Yields to a nested foraneus spec.
+  def self.form(name, &block)
+    converter = Class.new(Foraneus::Converters::Nested, &block)
     field(name, converter)
   end
 
@@ -180,9 +194,6 @@ class Foraneus
   # @param [Symbol] k Field name.
   # @param [String] v Raw value.
   def []=(k, v)
-    #raw_data = @_
-
-    #raw_data[k] = v
     @_[k] = v
   end
 
@@ -196,12 +207,25 @@ class Foraneus
 
     v, error = Utils.parse_datum(field, s, converter)
 
-    unless error
+    if error.nil? && !v.nil? && Foraneus::Utils.nested_converter?(converter)
+      instance.send(self.accessors[:data])[field.to_sym] = v.data if is_present
+      instance.send("#{field}=", v)
+      unless v.valid?
+        error = Foraneus::Error.new('NestedFormError', "Invalid nested form: #{field}")
+        instance.send(self.accessors[:errors])[field.to_sym] = error
+      end
+
+    elsif error.nil?
       instance.send("#{field}=", v)
       instance.send(self.accessors[:data])[field.to_sym] = v if is_present || converter.opts.include?(:default)
+    else
+      if Foraneus::Utils.nested_converter?(converter)
+        error = Foraneus::Error.new('NestedFormError', "Invalid nested form: #{field}")
+        instance.send(self.accessors[:errors])[field.to_sym] = error
+      else
+        instance.send(self.accessors[:errors])[field.to_sym] = error if error
+      end
     end
-
-    instance.send(self.accessors[:errors])[field.to_sym] = error if error
   end
   private_class_method :__parse_field
 
@@ -216,7 +240,17 @@ class Foraneus
 
     s = Utils.raw_datum(v, converter)
 
-    instance[field.to_sym] = s if is_present || converter.opts.include?(:default)
+    if Foraneus::Utils.nested_converter?(converter)
+      instance.send("#{field}=", s)
+    end
+
+    if is_present || converter.opts.include?(:default)
+      if Foraneus::Utils.nested_converter?(converter) && !s.nil?
+        instance[field.to_sym] = s[]
+      else
+        instance[field.to_sym] = s
+      end
+    end
   end
   private_class_method :__raw_field
 
