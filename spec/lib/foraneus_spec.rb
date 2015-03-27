@@ -145,11 +145,11 @@ describe Foraneus do
           end
 
           it 'provides a key' do
-            assert_equal error.key, converter_exception.class.name
+            assert_equal converter_exception.class.name, error.key
           end
 
           it 'provides a message' do
-            assert_equal error.message, converter_exception.message
+            assert_equal converter_exception.message, error.message
           end
         end
       end
