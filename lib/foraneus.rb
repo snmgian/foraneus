@@ -1,3 +1,7 @@
+# TODO refactor
+class NestedFormError < StandardError
+end
+
 if RUBY_VERSION == '1.8.7'
   require 'foraneus/compatibility/ruby-1.8.7'
 end
@@ -7,9 +11,11 @@ require 'foraneus/converters/date'
 require 'foraneus/converters/decimal'
 require 'foraneus/converters/float'
 require 'foraneus/converters/integer'
+require 'foraneus/converters/nested'
 require 'foraneus/converters/noop'
 require 'foraneus/converters/string'
 require 'foraneus/errors'
+require 'foraneus/utils'
 
 # Foraneus base class used to declare a data set, aka 'form'.
 class Foraneus
@@ -51,6 +57,15 @@ class Foraneus
   # @param (see Foraneus::Converters::Float#initialize)
   def self.float(name, *args)
     converter = Foraneus::Converters::Float.new(*args)
+    field(name, converter)
+  end
+
+  # Declares a nested form field
+  #
+  # @param [Symbol] name The name of the field.
+  # @yield Yields to a nested foraneus spec.
+  def self.form(name, &block)
+    converter = Class.new(Foraneus::Converters::Nested, &block)
     field(name, converter)
   end
 
@@ -123,24 +138,22 @@ class Foraneus
   def self.parse(data = {})
     instance = self.create_instance
 
-    parsed_keys = []
-
     fields.each do |field, converter|
-      given_key = field
-      v = data.fetch(given_key) do
-        given_key = field.to_sym
-        data.fetch(given_key, nil)
+      # TODO refactor, get rid of is_present
+      is_present = true
+      v = data.fetch(field) do
+        field = field.to_sym
+        data.fetch(field) do
+          is_present = false
+          nil
+        end
       end
 
-      parsed_keys << given_key
-      __parse_raw_datum(given_key, v, instance, converter)
+      __parse_raw_datum(field, v, instance, converter, is_present)
     end
 
-    data.each do |k, v|
-      unless parsed_keys.include?(k)
-        instance[k] = v
-      end
-    end
+    # try to remove the nedd of having an instance variable so it will not clash
+    instance.instance_variable_set(:'@_', data.dup)
 
     instance
   end
@@ -187,9 +200,6 @@ class Foraneus
   # @param [Symbol] k Field name.
   # @param [String] v Raw value.
   def []=(k, v)
-    #raw_data = @_
-
-    #raw_data[k] = v
     @_[k] = v
   end
 
@@ -208,15 +218,25 @@ class Foraneus
   # @param [String] v
   # @param [Foraneus] foraneus
   # @param [Converter] converter
-  def self.__parse_raw_datum(k, v, foraneus, converter)
-    field = k.to_s
-
-    foraneus[k] = v
-
+  # @param [Boolean] is_present
+  #
+  # # TODO refactor
+  def self.__parse_raw_datum(k, v, foraneus, converter, is_present)
     v = __parse(k, v, converter)
 
-    foraneus.send("#{field}=", v)
-    foraneus.send(self.accessors[:data])[k] = v
+    foraneus.send("#{k}=", v)
+
+    if !v.nil? && Foraneus::Utils.nested_converter?(converter)
+      foraneus.send(self.accessors[:data])[k] = v.data if is_present
+
+      unless v.valid?
+        error = Foraneus::Error.new('NestedFormError', "Invalid nested form: #{k}")
+        foraneus.send(self.accessors[:errors])[k] = error
+      end
+
+    else
+      foraneus.send(self.accessors[:data])[k] = v if is_present
+    end
 
   rescue
     error = Foraneus::Error.new($!.class.name, $!.message)
@@ -242,8 +262,19 @@ class Foraneus
 
     if v.nil? && converter.opts[:required]
       raise KeyError, "required parameter not found: #{field.inspect}"
-    elsif v.nil?
+
+    elsif v.nil? && converter.opts.include?(:default)
       converter.opts[:default]
+
+    elsif v.nil? && Foraneus::Utils.nested_converter?(converter)
+      nil
+
+    elsif Foraneus::Utils.nested_converter?(converter) && !(Hash === v)
+      raise NestedFormError, "Invalid nested form: #{field}"
+
+    elsif v.nil?
+      nil
+
     else
       converter.parse(v)
     end
@@ -262,6 +293,7 @@ class Foraneus
   # @param [Converter] converter
   def self.__raw_datum(k, v, foraneus, converter)
     foraneus.send("#{k}=", v)
+    foraneus.send(self.accessors[:data])[k] = v
 
     if v.nil?
       v = converter.opts[:default]
@@ -271,8 +303,11 @@ class Foraneus
       converter.raw(v)
     end
 
+    if Foraneus::Utils.nested_converter?(converter)
+      foraneus.send("#{k}=", s)
+    end
+
     foraneus[k] = s
-    foraneus.send(self.accessors[:data])[k] = v
   end
   private_class_method :__raw_datum
 

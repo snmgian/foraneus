@@ -47,7 +47,10 @@ raw and parsed data.
   ```
 
   ``` ruby
+  # the parsed attributes
   form.data   # => { :delay => 5, :duration => 2.14 }
+
+  # the received attributes
   form[]      # => { :delay => '5', :duration => '2.14' }
   ```
 
@@ -163,6 +166,24 @@ If an external value is not fed into a required field, an error with key `KeyErr
   form.errors[:delay].message     # => 'required parameter not found: "delay"'
   ```
 
+## Absence of optional fields
+
+Absent fields are treated as `nil` when invoking accessor methods.
+
+  ``` ruby
+  MyForm = Class.new(Foraneus) { string :name }
+  form = MyForm.parse
+
+  form.name       # => nil
+  ```
+
+Data accessors don't include any absent field.
+
+  ``` ruby
+  form.data       # => {}
+  form[]          # => {}
+  ```
+
 ## Blank values
 
 By default, any blank value is treated as nil.
@@ -197,8 +218,12 @@ Parse data from the ouside:
   form = MyForm.parse
 
   form.name             # => 'Alice'
+  form.data             # => { :name => 'Alice' }
+
   form[:name]           # => nil, because data from the outside
                         #    don't include any value
+
+  form[]                # => {}
   ```
 
 Convert values back from the inside:
@@ -234,6 +259,165 @@ It is possible to rename methods `#errors` and `#data` so it will not conflict w
   form.non_clashing_errors    # []
   form.non_clashing_data      # { :errors => 'some errors', :data => 'some data' }
   ```
+
+## Nesting
+Forms can also have form fields.
+
+  ``` ruby
+  class Profile < Foraneus
+    string  :email
+
+    form    :coords do
+      integer :x
+      integer :y
+    end
+  end
+  ```
+
+  ``` ruby
+  profile = Profile.parse(:email => 'mail@example.org', :coords => { :x => '1', :y => '2' })
+
+  profile.email     # => mail@example.org
+
+  profile.coords.x # => 1
+  profile.coords.y # => 2
+
+  profile.coords[:x] # => '1'
+  profile.coords[:y] # => '2'
+
+  ```
+
+  ``` ruby
+  profile.coords.data # => { :x => 1, :y => 2 }
+  profile.coords[]    # => { :x => '1', :y => '2' }
+  ```
+
+  ``` ruby
+  profile[:coords] # =>  { :x => '1', :y => '2' }
+  ```
+
+  ``` ruby
+  profile.data # => { :email => 'mail.example.org', :coords => { :x => 1, :y => 2 } }
+  profile[] # => { :email => 'mail@example.org', :coords => { :x => '1', :y => '2' } }
+  ```
+
+ - Absence
+  ``` ruby
+  profile = Profile.parse
+
+  profile.coords # => nil
+  profile.data   # => {}
+  profile[]      # => {}
+  ```
+
+  - .Nullity
+  ``` ruby
+  profile = Profile.parse(:coords => nil)
+
+  profile.coords # => nil
+  profile.data   # => { :coords => nil }
+  profile[]      # => { :coords => nil }
+  ```
+
+ - Emptiness
+  ``` ruby
+  profile = Profile.parse(:coords => {})
+
+  profile.coords.x    # => nil
+  profile.coords.y    # => nil
+
+  profile.coords.data # => {}
+  profile.coords[]    # => {}
+
+  profile.data  # => { :coords => {} }
+  profile[] # => { :coords => {} }
+  ```
+
+ - Validations
+  ``` ruby
+  profile = Profile.parse(:coords => { :x => '0', :y => '0' })
+
+  profile.coords.valid? # => true
+  profile.coords.errors # => {}
+  ```
+
+  ``` ruby
+  profile = Profile.parse(:coords => { :x => 'FIVE' })
+
+  profile.coords.x  # => nil
+
+  profile.coords.valid? # => false
+
+  profile.coords.errors[:x].key # => 'ArgumentError'
+  profile.coords.errors[:x].message   # => 'invalid value for Integer(): "FIVE"'
+
+  profile.valid?  # => false
+
+  profile.errors[:coords].key # => 'NestedFormError'
+  profile.errors[:coords].message # => 'Invalid nested form: coords'
+  ```
+
+  ``` ruby
+  profile = Profile.parse(:coords => 'FIVE,SIX')
+
+  profile.coords    # => nil
+
+
+  profile.valid?  # => false
+  profile.errors[:coords].key # => 'NestedFormError'
+  profile.errors[:coords].message # => 'Invalid nested form: coords'
+  ```
+
+ - From the inside:
+  ``` ruby
+  profile = Profile.raw(:email => 'mail@example.org', :coords => { :x => 0, :y => 0 })
+  ```
+
+  ``` ruby
+  profile.coords.x  # => 0
+  profile.coords.data  # => { :x => 0, :y => 0 }
+
+  profile.coords[:x] # => '0'
+  profile.coords[]  # => { :x => '0', :y => '0' }
+  ```
+
+  ``` ruby
+  profile.data # => { :email => 'email.example.org', :coords => { :x => 0, :y => 0 } }
+  profile[] # => { :email => 'email@example.org', :coords => { :x => '0', :y => '0' } }
+  ```
+  - .Absence
+
+  ```
+  profile = Profile.raw
+
+  profile.coords # => nil
+  profile.data   # => {}
+  profile[]      # => {}
+  ```
+
+  - .Nullity
+  ``` ruby
+  profile = Profile.raw(:coords => nil)
+
+  profile.coords # => nil
+  profile.data   # => { :coords => nil }
+  profile[]      # => { :coords => nil }
+  ```
+
+  - .Emptiness
+  ``` ruby
+  profile = Profile.raw(:coords => {})
+
+  profile.coords.x  # => nil
+  profile.coords.y  # => nil
+
+  profile.coords.data # => {}
+  profile.coords[]    # => {}
+
+  profile.data      # => { :coords => {} }
+  profile[]      # => { :coords => {} }
+  ```
+
 
 ## Installation
 
