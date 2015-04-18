@@ -10,13 +10,14 @@ require 'foraneus/converters/integer'
 require 'foraneus/converters/noop'
 require 'foraneus/converters/string'
 require 'foraneus/errors'
+require 'foraneus/utils'
 
 # Foraneus base class used to declare a data set, aka 'form'.
 class Foraneus
 
   # @api private
   def initialize
-    @_ = {}
+    @_ = {} # Hash that holds external representation data
   end
 
   # Declares a boolean field.
@@ -99,6 +100,11 @@ class Foraneus
     @fields ||= {}
   end
 
+  # Return the names of data and error accessors
+  #
+  # Returned hash contains the keys :data and :errors, where values are the proper accesor names
+  #
+  # @return [Hash]
   def self.accessors
     @accessors ||= {
       :data => :data,
@@ -106,11 +112,14 @@ class Foraneus
     }
   end
 
+  # Create a new instance while setting up data and error accessors
+  #
+  # @return [Foraneus]
   def self.create_instance
     instance = self.new
 
-    __singleton_attr_reader(instance, :data, {})
-    __singleton_attr_reader(instance, :errors, {})
+    Utils.singleton_attr_accessor(instance, :data, {})
+    Utils.singleton_attr_accessor(instance, :errors, {})
 
     instance
   end
@@ -122,24 +131,12 @@ class Foraneus
   # @return [Foraneus] An instance of a form.
   def self.parse(data = {})
     instance = self.create_instance
+    data = data.dup
 
-    parsed_keys = []
+    instance.instance_variable_set(:@_, data.dup)
 
     fields.each do |field, converter|
-      given_key = field
-      v = data.fetch(given_key) do
-        given_key = field.to_sym
-        data.fetch(given_key, nil)
-      end
-
-      parsed_keys << given_key
-      __parse_raw_datum(given_key, v, instance, converter)
-    end
-
-    data.each do |k, v|
-      unless parsed_keys.include?(k)
-        instance[k] = v
-      end
+      __parse_field(data, field, converter, instance)
     end
 
     instance
@@ -152,16 +149,12 @@ class Foraneus
   # @return [Foraneus] An instance of a form.
   def self.raw(data = {})
     instance = self.create_instance
+    data = data.dup
+
+    instance.send("#{self.accessors[:data]}=", data)
 
     fields.each do |field, converter|
-      given_key = field
-
-      v = data.fetch(given_key) do
-        given_key = field.to_sym
-        data.fetch(given_key, nil)
-      end
-
-      __raw_datum(given_key, v, instance, converter)
+      __raw_field(data, field, converter, instance)
     end
 
     instance
@@ -174,8 +167,8 @@ class Foraneus
     if m.nil?
       @_
     else
-      @_.fetch(m) do
-        @_[m.to_s]
+      @_.fetch(m.to_s) do
+        @_[m.to_sym]
       end
     end
   end
@@ -198,100 +191,33 @@ class Foraneus
     @errors.empty?
   end
 
-  # @api private
-  #
-  # Parses a value and assigns it to the corresponding field.
-  #
-  # It also registers errors if the conversion fails.
-  #
-  # @param [String, Symbol] k
-  # @param [String] v
-  # @param [Foraneus] foraneus
-  # @param [Converter] converter
-  def self.__parse_raw_datum(k, v, foraneus, converter)
-    field = k.to_s
+  def self.__parse_field(data, field, converter, instance)
+    s, is_present = Utils.fetch(data, field)
 
-    foraneus[k] = v
+    v, error = Utils.parse_datum(field, s, converter)
 
-    v = __parse(k, v, converter)
-
-    foraneus.send("#{field}=", v)
-    foraneus.send(self.accessors[:data])[k] = v
-
-  rescue
-    error = Foraneus::Error.new($!.class.name, $!.message)
-    foraneus.send(self.accessors[:errors])[k] = error
-  end
-  private_class_method :__parse_raw_datum
-
-  # @api private
-  #
-  # Parses a raw value.
-  #
-  # @param [String, Symbol] field
-  # @param [String] v Raw value.
-  # @param converter
-  #
-  # @raise [KeyError] if converter requires a value but no one is given.
-  #
-  # @return [Object]
-  def self.__parse(field, v, converter)
-    if v == '' && converter.opts.fetch(:blanks_as_nil, true)
-      v = nil
+    unless error
+      instance.send("#{field}=", v)
+      instance.send(self.accessors[:data])[field.to_sym] = v if is_present || converter.opts.include?(:default)
     end
 
-    if v.nil? && converter.opts[:required]
-      raise KeyError, "required parameter not found: #{field.inspect}"
-    elsif v.nil?
-      converter.opts[:default]
-    else
-      converter.parse(v)
-    end
+    instance.send(self.accessors[:errors])[field.to_sym] = error if error
   end
-  private_class_method :__parse
+  private_class_method :__parse_field
 
-  # @api private
-  #
-  # Obtains a raw representation of a value and assigns it to the corresponding field.
-  #
-  # It also registers errors if the conversion fails.
-  #
-  # @param [String, Symbol] k
-  # @param [String] v
-  # @param [Foraneus] foraneus
-  # @param [Converter] converter
-  def self.__raw_datum(k, v, foraneus, converter)
-    foraneus.send("#{k}=", v)
+  def self.__raw_field(data, field, converter, instance)
+    v, is_present = Utils.fetch(data, field)
+
+    instance.send("#{field}=", v)
 
     if v.nil?
       v = converter.opts[:default]
     end
 
-    s = unless v.nil?
-      converter.raw(v)
-    end
+    s = Utils.raw_datum(v, converter)
 
-    foraneus[k] = s
-    foraneus.send(self.accessors[:data])[k] = v
+    instance[field.to_sym] = s if is_present || converter.opts.include?(:default)
   end
-  private_class_method :__raw_datum
-
-  # @api private
-  #
-  # Creates a singleton attribute reader on an instance.
-  #
-  # @param [Foraneus] instance
-  # @param [Symbol] attribute
-  # @param initial_value
-  def self.__singleton_attr_reader(instance, attribute, initial_value = nil)
-    spec = instance.class
-
-    instance.singleton_class.send(:attr_reader, spec.accessors[attribute])
-
-    instance.instance_exec do
-      instance.instance_variable_set(:"@#{spec.accessors[attribute]}", initial_value)
-    end
-  end
-  private_class_method :__singleton_attr_reader
+  private_class_method :__raw_field
 
 end

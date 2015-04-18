@@ -82,9 +82,10 @@ describe Foraneus do
 
         assert_equal 5, subject.delay
         assert_equal 5, subject.data[:delay]
+        assert_equal({ :delay => 5 }, subject.data)
 
         assert_equal '5', subject[:delay]
-        assert_nil subject['delay']
+        assert_equal '5', subject['delay']
         assert_equal({ :delay => '5' }, subject[])
 
         assert subject.valid?
@@ -98,7 +99,8 @@ describe Foraneus do
         it 'parses given data' do
           assert_equal '5', subject['delay']
           assert_equal '5', subject[:delay]
-          assert_equal 5, subject.data['delay']
+
+          assert_equal({ :delay => 5 }, subject.data)
 
           assert_equal({ 'delay' => '5' }, subject[])
         end
@@ -267,11 +269,7 @@ describe Foraneus do
 
           assert_equal 1, subject.delay
 
-          assert_equal 1, subject.data[:delay]
-
-          assert_nil subject[:delay]
-
-          assert_nil subject[][:delay]
+          assert_equal({ :delay => 1}, subject.data)
 
           refute subject.errors.include?(:delay)
         end
@@ -289,6 +287,21 @@ describe Foraneus do
             assert_nil subject[:delay]
           end
         end
+
+        describe 'when missing optional field' do
+          let(:converter) { Foraneus::Converters::Integer.new(:required => false) }
+
+          subject { form_spec.parse }
+
+          it 'parses' do
+            assert subject.valid?
+
+            assert_nil subject.delay
+            refute_includes subject.data, :delay
+
+            refute_includes subject[], :delay
+          end
+        end
       end
     end
   end
@@ -303,7 +316,7 @@ describe Foraneus do
 
       assert_equal '5', subject[:delay]
 
-      assert_equal '5', subject[][:delay]
+      assert_equal({ :delay => '5' }, subject[])
 
       assert subject.valid?
 
@@ -320,7 +333,7 @@ describe Foraneus do
 
         assert_equal '5', subject[:delay]
 
-        assert_equal '5', subject[]['delay']
+        assert_equal({ :delay => '5' }, subject[])
 
         assert subject.valid?
 
@@ -349,11 +362,22 @@ describe Foraneus do
 
       it 'parses' do
         assert_nil subject.delay
+        refute_includes subject.data, :delay
 
         assert_equal '1', subject[:delay]
         assert_equal '1', subject[][:delay]
       end
     end
-  end
 
+    describe 'with absent values' do
+      subject { form_spec.raw }
+
+      it 'parses' do
+        assert_nil subject.delay
+
+        assert_equal({}, subject.data)
+        assert_equal({}, subject[])
+      end
+    end
+  end
 end
