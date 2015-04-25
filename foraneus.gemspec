@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = 'foraneus'
-  s.version         = '0.0.14'
+  s.version         = '0.0.15'
   s.platform        = Gem::Platform::RUBY
   s.authors         = ['Gianfranco Zas']
   s.email           = 'snmgian@gmail.com'
