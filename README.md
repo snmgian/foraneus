@@ -310,7 +310,7 @@ Forms can also have form fields.
   profile[]      # => {}
   ```
 
-  - .Nullity
+ - Nullity
   ``` ruby
   profile = Profile.parse(:coords => nil)
 
@@ -385,7 +385,7 @@ Forms can also have form fields.
   profile.data # => { :email => 'email.example.org', :coords => { :x => 0, :y => 0 } }
   profile[] # => { :email => 'email@example.org', :coords => { :x => '0', :y => '0' } }
   ```
-  - .Absence
+  - Absence
 
   ```
   profile = Profile.raw
@@ -395,7 +395,7 @@ Forms can also have form fields.
   profile[]      # => {}
   ```
 
-  - .Nullity
+  - Nullity
   ``` ruby
   profile = Profile.raw(:coords => nil)
 
@@ -404,7 +404,7 @@ Forms can also have form fields.
   profile[]      # => { :coords => nil }
   ```
 
-  - .Emptiness
+  - Emptiness
   ``` ruby
   profile = Profile.raw(:coords => {})
 
