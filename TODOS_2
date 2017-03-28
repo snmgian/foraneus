@@ -1,0 +1,6 @@
+- si al converter Decimal le llega cualquier fruta, ej "NO_ES_UN_NUMERO" debería de tirar un error,
+  o al menos tener un option que lo haga configurable.
+- si el raw recibe extra keys, deben ser accesibles desde #data?
++ verificar que los assert_equal son invocados con la firma (expected, actual)
+- que los nested forms acepten aliasing de valid?, errors, etc
+- resolver warnings al buildear la gem

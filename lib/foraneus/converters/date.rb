@@ -21,7 +21,11 @@ class Foraneus
       #
       # @return [Date]
       def parse(s)
-        ::Date.strptime(s, @format)
+        if ::Date === s
+          s
+        else
+          ::Date.strptime(s, @format)
+        end
       end
 
       def raw(v)

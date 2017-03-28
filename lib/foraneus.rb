@@ -187,6 +187,11 @@ class Foraneus
     end
   end
 
+  def ==(o)
+    o.kind_of?(self.class) &&
+      send(self.class.accessors[:data]) == o.send(o.class.accessors[:data])
+  end
+
   # @api private
   #
   # Sets a raw value.
